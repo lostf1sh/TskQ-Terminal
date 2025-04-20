@@ -9,17 +9,34 @@ import { Terminal } from "@/components/terminal"
 const artworkData = [
   {
     id: 1,
-    title: "Digital Painting 1",
-    filename: "artwork1.jpg",
-    description: "A digital painting created in 2023"
+    title: "Kiyosumi Fan-Art",
+    filename: "kiynale.png",
+    description: "An attempt to recreate 'The kiyosumi effect' "
   },
   {
     id: 2,
-    title: "Digital Painting 2", 
-    filename: "artwork2.jpg",
-    description: "Abstract composition"
+    title: "Kiyosumi Fan-Art", 
+    filename: "Kiyosketch.png",
+    description: "More of that messy art-style."
   },
-  // Add more artworks as needed
+ {
+    id: 3,
+    title: "Mash", 
+    filename: "mashfr.png",
+    description: "An accurate representation of Mash of the toes"
+  },
+   {
+    id: 4,
+    title: "Osage Fan-Art", 
+    filename: "osage.png",
+    description: "My first attempt on the messy art-style."
+  },
+   {
+    id: 5,
+    title: "Cho", 
+    filename: "cho-reborn.png",
+    description: "My first and probably last original character, reborn."
+  },
 ]
 
 export default function Home() {
