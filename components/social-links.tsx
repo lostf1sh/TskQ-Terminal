@@ -4,22 +4,22 @@ export function SocialLinks() {
   const socialLinks = [
     {
       name: "GitHub",
-      url: "https://github.com/yourusername",
+      url: "https://github.com/tskq",
       icon: "GH>_",
     },
     {
       name: "Instagram",
-      url: "https://instagram.com/yourusername",
+      url: "https://instagram.com/tskilca",
       icon: "IG>_",
     },
     {
       name: "SoundCloud",
-      url: "https://soundcloud.com/yourusername",
+      url: "https://soundcloud.com/floppydisc-825748608",
       icon: "SC>_",
     },
     {
       name: "YouTube",
-      url: "https://youtube.com/@yourchannel",
+      url: "https://youtube.com/@tskku",
       icon: "YT>_",
     },
   ]

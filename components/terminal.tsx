@@ -237,7 +237,7 @@ export function Terminal({ showArtwork, setShowArtwork }: TerminalProps) {
               <p className="pl-4 mb-1">
                 <span className="terminal-green">GitHub:</span>{" "}
                 <a
-                  href="https://github.com/yourusername"
+                  href="https://github.com/tskq"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-400 hover:underline"
@@ -248,7 +248,7 @@ export function Terminal({ showArtwork, setShowArtwork }: TerminalProps) {
               <p className="pl-4 mb-1">
                 <span className="terminal-green">Instagram:</span>{" "}
                 <a
-                  href="https://instagram.com/yourusername"
+                  href="https://instagram.com/tskilca"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-400 hover:underline"
@@ -259,7 +259,7 @@ export function Terminal({ showArtwork, setShowArtwork }: TerminalProps) {
               <p className="pl-4 mb-1">
                 <span className="terminal-green">SoundCloud:</span>{" "}
                 <a
-                  href="https://soundcloud.com/yourusername"
+                  href="https://soundcloud.com/floppydisc-825748608"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-400 hover:underline"
@@ -270,7 +270,7 @@ export function Terminal({ showArtwork, setShowArtwork }: TerminalProps) {
               <p className="pl-4 mb-1">
                 <span className="terminal-green">YouTube:</span>{" "}
                 <a
-                  href="https://youtube.com/@yourchannel"
+                  href="https://youtube.com/@tskku"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-400 hover:underline"
