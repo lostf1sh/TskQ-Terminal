@@ -16,7 +16,7 @@ const artworkData = [
   {
     id: 2,
     title: "Kiyosumi Fan-Art", 
-    filename: "Kiyosketch.png",
+    filename: "kiyosketch.png",
     description: "More of that messy art-style."
   },
  {
