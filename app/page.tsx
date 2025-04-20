@@ -1,14 +1,47 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { SocialLinks } from "@/components/social-links"
 import { DiscordPresence } from "@/components/discord-presence"
 import { Terminal } from "@/components/terminal"
+import { SocialLinks } from "@/components/social-links"
+
+const artworkData = [
+  {
+    id: 1,
+    title: "Kiyosumi Fan-Art",
+    filename: "kiynale.png",
+    description: "An attempt to recreate 'The kiyosumi effect'"
+  },
+  {
+    id: 2,
+    title: "Kiyosumi Fan-Art",
+    filename: "kiyosketch.png",
+    description: "More of that messy art-style."
+  },
+  {
+    id: 3,
+    title: "Mash",
+    filename: "mashfr.png",
+    description: "An accurate representation of Mash of the toes"
+  },
+  {
+    id: 4,
+    title: "Osage Fan-Art",
+    filename: "osage.png",
+    description: "My first attempt on the messy art-style."
+  },
+  {
+    id: 5,
+    title: "Cho",
+    filename: "cho-reborn.png",
+    description: "My first and probably last original character, reborn."
+  },
+]
 
 export default function Home() {
-  const [currentTime, setCurrentTime] = useState("")
   const [showArtwork, setShowArtwork] = useState(false)
-  const userId = "1002839537644482611" // The user's Discord ID
+  const [currentTime, setCurrentTime] = useState("")
+  const userId = "1002839537644482611"
 
   useEffect(() => {
     const updateTime = () => {
@@ -26,29 +59,27 @@ export default function Home() {
 
   return (
     <div className="terminal-container">
-      <div className="terminal-header">
-        <div>
-          <h1 className="terminal-white text-xl md:text-2xl font-bold">~/tskq-bio</h1>
-        </div>
-        <div className="text-right">
-          <DiscordPresence userId={userId} />
-        </div>
-      </div>
+      <DiscordPresence userId={userId} />
 
       <main className="flex-1 py-8">
         <div className="mb-8">
-          <p className="terminal-white mb-2">Interactive Terminal Interface</p>
+          <p className="terminal-white mb-2">> Interactive Terminal Interface</p>
           <Terminal showArtwork={showArtwork} setShowArtwork={setShowArtwork} />
         </div>
 
         {showArtwork && (
           <div className="mt-8">
             <h2 className="terminal-green mb-4 text-lg font-bold">$ ls ~/artwork</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[1, 2, 3, 4].map((id) => (
-                <div key={id} className="border border-gray-800 p-2">
-                  <img src={`/placeholder.svg?height=200&width=300`} alt={`Artwork ${id}`} className="w-full h-auto" />
-                  <p className="mt-2 terminal-white">artwork_{id}.png</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {artworkData.map((artwork) => (
+                <div key={artwork.id} className="border border-gray-800 p-4 hover:border-green-500 transition-colors">
+                  <img
+                    src={`/${artwork.filename}`}
+                    alt={artwork.title}
+                    className="w-full h-auto object-cover rounded shadow-lg mb-2"
+                  />
+                  <h3 className="terminal-white font-bold">{artwork.title}</h3>
+                  <p className="terminal-white text-sm opacity-80">{artwork.description}</p>
                 </div>
               ))}
             </div>
@@ -62,9 +93,11 @@ export default function Home() {
       </main>
 
       <div className="terminal-footer">
-        <div className="terminal-white">© {new Date().getFullYear()} - TskQ (Not an actual copyright.)</div>
+        <div className="terminal-white">
+          © {new Date().getFullYear()} – TskQ (Not an actual copyright.)
+        </div>
         <div className="text-right">
-          <div className="terminal-white">system_time: {currentTime}</div>
+          <div className="terminal-white">system time: {currentTime}</div>
         </div>
       </div>
     </div>
