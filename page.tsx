@@ -60,18 +60,33 @@ export default function Home() {
 
   return (
     <div className="terminal-container">
-      {/* ... existing header code ... */}
+      {/* Optional current time display */}
+      <div className="terminal-white text-sm opacity-60 mb-4">
+        Current Time: {currentTime}
+      </div>
 
+      {/* Toggle artwork button */}
+      <button
+        onClick={() => setShowArtwork(!showArtwork)}
+        className="terminal-green mb-6 hover:underline"
+      >
+        {showArtwork ? "$ clear" : "$ ls ~/artwork"}
+      </button>
+
+      {/* Artwork section */}
       {showArtwork && (
-        <div className="mt-8">
+        <div className="mt-4">
           <h2 className="terminal-green mb-4 text-lg font-bold">$ ls ~/artwork</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {artworkData.map((artwork) => (
-              <div key={artwork.id} className="border border-gray-800 p-4 hover:border-green-500 transition-colors">
+              <div
+                key={artwork.id}
+                className="border border-gray-800 p-4 hover:border-green-500 transition-colors"
+              >
                 <img 
                   src={`/${artwork.filename}`} 
                   alt={artwork.title}
-                  className="w-full h-auto mb-2"
+                  className="w-full h-auto object-cover rounded shadow-lg mb-2"
                 />
                 <h3 className="terminal-white font-bold">{artwork.title}</h3>
                 <p className="terminal-white text-sm opacity-80">{artwork.description}</p>
@@ -81,7 +96,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* ... rest of your existing code ... */}
+      {/* Other components or content can go below */}
     </div>
   )
 }
