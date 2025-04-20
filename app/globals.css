@@ -338,16 +338,3 @@ body {
     clip: rect(38px, 9999px, 49px, 0);
   }
 }
-```  0);
-  }
-  95% {
-clip: rect(42px, 9999px, 97px, 0
-)
-;
-  }
-  100% {
-clip: rect(38px, 9999px, 49px, 0
-)
-;
-  }
-}
