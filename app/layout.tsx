@@ -10,7 +10,7 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Terminal Portfolio",
+  title: "( ͡° ͜ʖ ͡°)",
   description: "A terminal-themed personal website",
     generator: 'v0.dev'
 }
