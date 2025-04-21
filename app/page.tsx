@@ -67,12 +67,17 @@ export default function Home() {
           <Terminal showArtwork={showArtwork} setShowArtwork={setShowArtwork} />
         </div>
 
+        <div className="my-8">
+          <h2 className="terminal-green mb-4 text-lg font-bold">$ ls ~/social</h2>
+          <SocialLinks />
+        </div>
+
         <div className="mb-8">
           <button
-  onClick={() => setShowArtwork(!showArtwork)}
-  className="bg-black border border-green-500 text-green-500 px-4 py-2 rounded hover:bg-green-500 hover:text-black transition-colors"
->
-  {showArtwork ? "Hide Artwork" : "Show Artwork"}
+            onClick={() => setShowArtwork(!showArtwork)}
+            className="bg-black border border-green-500 text-green-500 px-4 py-2 rounded hover:bg-green-500 hover:text-black transition-colors"
+          >
+            {showArtwork ? "Hide Artwork" : "Show Artwork"}
           </button>
         </div>
 
@@ -94,11 +99,6 @@ export default function Home() {
             </div>
           </div>
         )}
-
-        <div className="my-8">
-          <h2 className="terminal-green mb-4 text-lg font-bold">$ ls ~/social</h2>
-          <SocialLinks />
-        </div>
       </main>
 
       <div className="terminal-footer">
