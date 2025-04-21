@@ -69,10 +69,15 @@ export default function Home() {
 
         <div className="my-8">
           <h2 className="terminal-green mb-4 text-lg font-bold">$ ls ~/social</h2>
-          <SocialLinks />
+
+          {/* Update SocialLinks to accept className and pass it down */}
+          <SocialLinks
+            buttonClassName="bg-black border border-green-500 text-green-500 px-4 py-2 rounded hover:bg-green-500 hover:text-black transition-colors"
+          />
         </div>
 
-        <div className="mb-8">
+        {/* Centered Show Artwork Button */}
+        <div className="my-8 flex justify-center">
           <button
             onClick={() => setShowArtwork(!showArtwork)}
             className="bg-black border border-green-500 text-green-500 px-4 py-2 rounded hover:bg-green-500 hover:text-black transition-colors"
