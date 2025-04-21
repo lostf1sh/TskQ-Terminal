@@ -356,7 +356,7 @@ body {
   height: 100%;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.05;
+  opacity: 0.15;
   background-image: repeating-linear-gradient(
     0deg,
     rgba(0, 255, 0, 0.15) 0px,
