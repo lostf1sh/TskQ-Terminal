@@ -41,16 +41,41 @@ const artworkData = [
 export default function Home() {
   const [showArtwork, setShowArtwork] = useState(false)
   const [currentTime, setCurrentTime] = useState("")
-  const [isHovering, setIsHovering] = useState(false)
-  const [displayedText, setDisplayedText] = useState("")
 
+  // Typing animation setup
+  const [displayedText, setDisplayedText] = useState("")
   const defaultText = "(/≧▽≦)/"
   const hoverText = "☆*: .｡. o(≧▽≦)o .｡.:*☆"
-  const currentText = isHovering ? hoverText : defaultText
-  const lastTypedRef = useRef<string>("")
-  const typingInterval = useRef<NodeJS.Timeout | null>(null)
+  const fullTextRef = useRef(defaultText)
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const lastTypedRef = useRef("")
+
+  const handleHover = (hovering: boolean) => {
+    const newText = hovering ? hoverText : defaultText
+    if (newText === fullTextRef.current) return
+    fullTextRef.current = newText
+    triggerTypingAnimation(newText)
+  }
+
+  const triggerTypingAnimation = (text: string) => {
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current)
+    let i = 0
+    setDisplayedText("")
+    const typeNext = () => {
+      setDisplayedText(text.slice(0, i + 1))
+      i++
+      if (i < text.length) {
+        typingTimeoutRef.current = setTimeout(typeNext, 50)
+      }
+    }
+    typeNext()
+    lastTypedRef.current = text
+  }
 
   useEffect(() => {
+    // Initial typing
+    triggerTypingAnimation(defaultText)
+
     const updateTime = () => {
       const now = new Date()
       const hours = now.getHours().toString().padStart(2, "0")
@@ -61,40 +86,21 @@ export default function Home() {
 
     updateTime()
     const interval = setInterval(updateTime, 1000)
-    return () => clearInterval(interval)
-  }, [])
-
-  useEffect(() => {
-    if (currentText === lastTypedRef.current) return
-
-    lastTypedRef.current = currentText
-    setDisplayedText("")
-    let i = 0
-
-    if (typingInterval.current) clearInterval(typingInterval.current)
-
-    typingInterval.current = setInterval(() => {
-      setDisplayedText(currentText.slice(0, i + 1))
-      i++
-      if (i >= currentText.length && typingInterval.current) {
-        clearInterval(typingInterval.current)
-      }
-    }, 50)
-
     return () => {
-      if (typingInterval.current) clearInterval(typingInterval.current)
+      clearInterval(interval)
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current)
     }
-  }, [currentText])
+  }, [])
 
   return (
     <div className="terminal-container relative">
-      {/* Top-left typing emoji text with stable hover */}
+      {/* ✅ Fixed hover-safe emoji text block */}
       <div
-        className="absolute top-4 left-4 z-50 inline-block text-green-500 font-mono text-sm md:text-base cursor-default glow transition-all duration-300 ease-in-out"
-        onPointerEnter={() => setIsHovering(true)}
-        onPointerLeave={() => setIsHovering(false)}
+        className="absolute top-4 left-4 z-50 w-fit inline-flex flex-row text-green-500 font-mono text-sm md:text-base cursor-default glow transition-all duration-300 ease-in-out"
+        onPointerEnter={() => handleHover(true)}
+        onPointerLeave={() => handleHover(false)}
       >
-        <span className="inline-block">{displayedText}</span>
+        <span>{displayedText}</span>
         <span className="cursor" />
       </div>
 
@@ -112,7 +118,7 @@ export default function Home() {
           <SocialLinks />
         </div>
 
-        {/* Centered Show Artwork Button */}
+        {/* Show Artwork Button */}
         <div className="my-8 flex justify-center">
           <button
             onClick={() => setShowArtwork(!showArtwork)}
