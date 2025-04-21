@@ -43,18 +43,13 @@ export default function Home() {
   const [currentTime, setCurrentTime] = useState("")
   const userId = "1002839537644482611"
 
-  const defaultText = "(/≧▽≦)/"
-  const hoverText = "☆*: .｡. o(≧▽≦)o .｡.:*☆"
-  const [displayedText, setDisplayedText] = useState("")
-  const [fullText, setFullText] = useState(defaultText)
-
   useEffect(() => {
     const updateTime = () => {
       const now = new Date()
       const hours = now.getHours().toString().padStart(2, "0")
       const minutes = now.getMinutes().toString().padStart(2, "0")
       const seconds = now.getSeconds().toString().padStart(2, "0")
-      setCurrentTime(`${hours}:${minutes}:${seconds}`)
+      setCurrentTime(${hours}:${minutes}:${seconds})
     }
 
     updateTime()
@@ -62,30 +57,12 @@ export default function Home() {
     return () => clearInterval(interval)
   }, [])
 
-  useEffect(() => {
-    let i = 0
-    setDisplayedText("")
-    const interval = setInterval(() => {
-      setDisplayedText(fullText.slice(0, i + 1))
-      i++
-      if (i >= fullText.length) clearInterval(interval)
-    }, 50)
-    return () => clearInterval(interval)
-  }, [fullText])
-
-  const handleHover = (hovering: boolean) => {
-    setFullText(hovering ? hoverText : defaultText)
-  }
-
   return (
     <div className="terminal-container relative">
-      {/* Top-left typing animated emoji text */}
-      <div
-        className="absolute top-4 left-4 z-50 text-green-500 font-mono text-sm md:text-base cursor-default glow transition-all duration-300 ease-in-out"
-        onMouseEnter={() => handleHover(true)}
-        onMouseLeave={() => handleHover(false)}
-      >
-        {displayedText}
+      {/* Top-left terminal-style emoji text */}
+      <div className="absolute top-4 left-4 z-50 text-green-500 font-mono text-sm md:text-base cursor-default glow transition-all duration-300 ease-in-out group">
+        <span className="group-hover:hidden">(/≧▽≦)/</span>
+        <span className="hidden group-hover:inline">☆*: .｡. o(≧▽≦)o .｡.:*☆</span>
       </div>
 
       {/* DiscordPresence top-right */}
@@ -119,7 +96,7 @@ export default function Home() {
               {artworkData.map((artwork) => (
                 <div key={artwork.id} className="border border-gray-800 p-4 hover:border-green-500 transition-colors">
                   <img
-                    src={`/${artwork.filename}`}
+                    src={/${artwork.filename}}
                     alt={artwork.title}
                     className="w-full h-auto object-cover rounded shadow-lg mb-2"
                   />
