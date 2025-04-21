@@ -111,7 +111,6 @@ body {
   left: 0;
 }
 
-/* Terminal window styles */
 .terminal-window {
   font-family: "JetBrains Mono", monospace;
   border-radius: 4px;
@@ -136,7 +135,6 @@ body {
   background: #555;
 }
 
-/* Blinking cursor animation */
 @keyframes blink {
   0%,
   100% {
@@ -154,6 +152,16 @@ body {
   background-color: #00ff00;
   animation: blink 1s infinite;
   margin-left: 4px;
+}
+
+/* Glow effect (terminal-style emoji) */
+.glow {
+  text-shadow: 0 0 4px #00ff88, 0 0 8px #00ff88;
+}
+
+.glow-strong {
+  text-shadow: 0 0 8px #00ff88, 0 0 12px #00ff88, 0 0 20px #00ff88;
+  transition: text-shadow 0.3s ease;
 }
 
 /* Glitch effect */
