@@ -404,3 +404,15 @@ body {
   -webkit-column-break-inside: avoid;
   margin-bottom: 1rem;
 }
+.animate-bounce {
+  animation: bounce 1.5s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(8px);
+  }
+}
