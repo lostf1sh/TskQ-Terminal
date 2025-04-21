@@ -58,7 +58,14 @@ export default function Home() {
   }, [])
 
   return (
-    <div className="terminal-container">
+    <div className="terminal-container relative">
+      {/* Top-left terminal-style emoji text */}
+      <div className="absolute top-4 left-4 z-50 text-green-500 font-mono text-sm md:text-base cursor-default glow transition-all duration-300 ease-in-out group">
+        <span className="group-hover:hidden">(/≧▽≦)/</span>
+        <span className="hidden group-hover:inline">☆*: .｡. o(≧▽≦)o .｡.:*☆</span>
+      </div>
+
+      {/* DiscordPresence top-right */}
       <DiscordPresence userId={userId} />
 
       <main className="flex-1 py-8">
@@ -69,11 +76,7 @@ export default function Home() {
 
         <div className="my-8">
           <h2 className="terminal-green mb-4 text-lg font-bold">$ ls ~/social</h2>
-
-          {/* Update SocialLinks to accept className and pass it down */}
-          <SocialLinks
-            buttonClassName="bg-black border border-green-500 text-green-500 px-4 py-2 rounded hover:bg-green-500 hover:text-black transition-colors"
-          />
+          <SocialLinks />
         </div>
 
         {/* Centered Show Artwork Button */}
