@@ -39,7 +39,7 @@ const artworkData = [
 ]
 
 export default function Home() {
-  const [showArtwork, setShowArtwork] = useState(false)
+  const [showArtwork, setShowArtwork] = useState(true) // ✅ Show by default
   const [currentTime, setCurrentTime] = useState("")
   const [isHovering, setIsHovering] = useState(false)
 
@@ -66,6 +66,10 @@ export default function Home() {
         onPointerLeave={() => setIsHovering(false)}
       >
         {isHovering ? "☆*: .｡. o(≧▽≦)o .｡.:*☆" : "(/≧▽≦)/"}
+        {/* 👇 Arrow pointer */}
+        <div className="mt-4 text-center text-3xl animate-bounce glow pointer-events-none select-none">
+          ↓
+        </div>
       </div>
 
       {/* DiscordPresence top-right */}
@@ -82,7 +86,7 @@ export default function Home() {
           <SocialLinks />
         </div>
 
-        {/* Show Artwork Button */}
+        {/* Toggle button (still optional) */}
         <div className="my-8 flex justify-center">
           <button
             onClick={() => setShowArtwork(!showArtwork)}
@@ -92,6 +96,7 @@ export default function Home() {
           </button>
         </div>
 
+        {/* Masonry Artwork Grid */}
         {showArtwork && (
           <div className="mt-8">
             <h2 className="terminal-green mb-4 text-lg font-bold">$ ls ~/artwork</h2>
