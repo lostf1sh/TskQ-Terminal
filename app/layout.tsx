@@ -11,8 +11,8 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "( ͡° ͜ʖ ͡°)",
-  description: "A terminal-themed personal website",
-    generator: 'v0.dev'
+  description: "Tskq's terminal based thing!",
+    generator: 'TskQ'
 }
 
 export default function RootLayout({
