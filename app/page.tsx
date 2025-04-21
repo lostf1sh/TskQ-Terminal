@@ -88,17 +88,17 @@ export default function Home() {
 
   return (
     <div className="terminal-container relative">
-      {/* Top-left typing emoji text */}
+      {/* Top-left typing emoji text with stable hover */}
       <div
-        className="absolute top-4 left-4 z-50 text-green-500 font-mono text-sm md:text-base cursor-default glow transition-all duration-300 ease-in-out"
-        onMouseEnter={() => setIsHovering(true)}
-        onMouseLeave={() => setIsHovering(false)}
+        className="absolute top-4 left-4 z-50 inline-block text-green-500 font-mono text-sm md:text-base cursor-default glow transition-all duration-300 ease-in-out"
+        onPointerEnter={() => setIsHovering(true)}
+        onPointerLeave={() => setIsHovering(false)}
       >
-        {displayedText}
+        <span className="inline-block">{displayedText}</span>
         <span className="cursor" />
       </div>
 
-      {/* Top-right Discord presence */}
+      {/* DiscordPresence top-right */}
       <DiscordPresence userId="1002839537644482611" />
 
       <main className="flex-1 py-8">
