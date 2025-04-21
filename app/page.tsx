@@ -59,7 +59,7 @@ export default function Home() {
 
   return (
     <div className="terminal-container relative">
-      {/* ✅ Static emoji with glow and hover transition */}
+      {/* Static emoji hover text */}
       <div
         className="absolute top-4 left-4 z-50 inline-block text-green-500 font-mono text-sm md:text-base cursor-default glow transition-all duration-300 ease-in-out"
         onPointerEnter={() => setIsHovering(true)}
@@ -82,7 +82,7 @@ export default function Home() {
           <SocialLinks />
         </div>
 
-        {/* Centered Show Artwork Button */}
+        {/* Show Artwork Button */}
         <div className="my-8 flex justify-center">
           <button
             onClick={() => setShowArtwork(!showArtwork)}
@@ -95,9 +95,12 @@ export default function Home() {
         {showArtwork && (
           <div className="mt-8">
             <h2 className="terminal-green mb-4 text-lg font-bold">$ ls ~/artwork</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start auto-rows-auto">
               {artworkData.map((artwork) => (
-                <div key={artwork.id} className="border border-gray-800 p-4 hover:border-green-500 transition-colors">
+                <div
+                  key={artwork.id}
+                  className="flex flex-col border border-gray-800 p-4 hover:border-green-500 transition-colors rounded"
+                >
                   <img
                     src={`/${artwork.filename}`}
                     alt={artwork.title}
