@@ -74,8 +74,12 @@ export default function Home() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [showArtwork])
 
-  const scrollTo = (targetId: string) => {
-    const target = document.getElementById(targetId)
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }
+
+  const scrollToArtwork = () => {
+    const target = document.getElementById("artwork-section")
     if (target) {
       target.scrollIntoView({ behavior: "smooth" })
     }
@@ -106,8 +110,8 @@ export default function Home() {
           <SocialLinks />
         </div>
 
-        {/* Show/Hide button + arrows */}
-        <div className="my-8 flex flex-col items-center relative">
+        {/* Toggle button + arrows */}
+        <div className="my-8 flex flex-col items-center">
           <button
             onClick={() => setShowArtwork(!showArtwork)}
             className="bg-black border border-green-500 text-green-500 px-4 py-2 rounded hover:bg-green-500 hover:text-black transition-colors"
@@ -115,27 +119,20 @@ export default function Home() {
             {showArtwork ? "Hide Artwork" : "Show Artwork"}
           </button>
 
-          {showArtwork && showScrollDownArrow && (
-            <button
-              onClick={() => scrollTo("artwork-section")}
-              className="mt-4 text-green-500 text-5xl animate-bounce glow cursor-pointer select-none"
-              aria-label="Scroll to artwork"
+          {/* Scroll down arrow */}
+          {showArtwork && (
+            <div
+              className={`mt-4 text-green-500 text-5xl transition-opacity duration-500 ${
+                showScrollDownArrow ? "opacity-100" : "opacity-0 pointer-events-none"
+              } animate-bounce glow cursor-pointer select-none`}
+              onClick={scrollToArtwork}
             >
               ↓
-            </button>
-          )}
-
-          {showArtwork && showBackToTopArrow && (
-            <button
-              onClick={() => scrollTo("top")}
-              className="fixed bottom-8 right-8 text-green-500 text-4xl glow cursor-pointer hover:text-black hover:bg-green-500 transition-colors px-3 py-2 rounded"
-              aria-label="Back to top"
-            >
-              ↑
-            </button>
+            </div>
           )}
         </div>
 
+        {/* Artwork Grid */}
         {showArtwork && (
           <div id="artwork-section" className="mt-8">
             <h2 className="terminal-green mb-4 text-lg font-bold">$ ls ~/artwork</h2>
@@ -159,7 +156,19 @@ export default function Home() {
         )}
       </main>
 
-      <div id="top" className="terminal-footer">
+      {/* Back to top arrow */}
+      {showArtwork && (
+        <div
+          className={`fixed bottom-6 left-1/2 -translate-x-1/2 bg-black bg-opacity-50 rounded px-4 py-2 text-green-500 text-4xl transition-opacity duration-500 ${
+            showBackToTopArrow ? "opacity-100" : "opacity-0 pointer-events-none"
+          } cursor-pointer glow`}
+          onClick={scrollToTop}
+        >
+          ↑
+        </div>
+      )}
+
+      <div className="terminal-footer" id="top">
         <div className="terminal-white">
           © {new Date().getFullYear()} – TskQ (Not an actual copyright.)
         </div>
