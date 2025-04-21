@@ -59,9 +59,9 @@ export default function Home() {
 
   return (
     <div className="terminal-container relative">
-      {/* Static emoji hover text */}
+      {/* ✅ Big glowing emoji in the top-left */}
       <div
-        className="absolute top-4 left-4 z-50 inline-block text-green-500 font-mono text-sm md:text-base cursor-default glow transition-all duration-300 ease-in-out"
+        className="absolute top-6 left-6 z-50 text-green-500 font-mono text-5xl md:text-6xl lg:text-7xl leading-tight px-4 py-2 glow transition-all duration-300 ease-in-out"
         onPointerEnter={() => setIsHovering(true)}
         onPointerLeave={() => setIsHovering(false)}
       >
@@ -92,7 +92,6 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Masonry Artwork Grid */}
         {showArtwork && (
           <div className="mt-8">
             <h2 className="terminal-green mb-4 text-lg font-bold">$ ls ~/artwork</h2>
