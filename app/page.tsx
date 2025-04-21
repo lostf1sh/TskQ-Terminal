@@ -67,6 +67,15 @@ export default function Home() {
           <Terminal showArtwork={showArtwork} setShowArtwork={setShowArtwork} />
         </div>
 
+        <div className="mb-8">
+          <button
+            onClick={() => setShowArtwork(!showArtwork)}
+            className="bg-gray-900 border border-green-500 text-green-500 px-4 py-2 rounded hover:bg-green-500 hover:text-black transition-colors"
+          >
+            {showArtwork ? "Hide Artwork" : "Show Artwork"}
+          </button>
+        </div>
+
         {showArtwork && (
           <div className="mt-8">
             <h2 className="terminal-green mb-4 text-lg font-bold">$ ls ~/artwork</h2>
