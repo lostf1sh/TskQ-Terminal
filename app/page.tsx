@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { DiscordPresence } from "@/components/discord-presence"
 import { Terminal } from "@/components/terminal"
 import { SocialLinks } from "@/components/social-links"
@@ -41,7 +41,14 @@ const artworkData = [
 export default function Home() {
   const [showArtwork, setShowArtwork] = useState(false)
   const [currentTime, setCurrentTime] = useState("")
-  const userId = "1002839537644482611"
+
+  const defaultText = "(/≧▽≦)/"
+  const hoverText = "☆*: .｡. o(≧▽≦)o .｡.:*☆"
+  const [displayedText, setDisplayedText] = useState("")
+  const [isHovering, setIsHovering] = useState(false)
+
+  const fullText = isHovering ? hoverText : defaultText
+  const typingInterval = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     const updateTime = () => {
@@ -49,7 +56,7 @@ export default function Home() {
       const hours = now.getHours().toString().padStart(2, "0")
       const minutes = now.getMinutes().toString().padStart(2, "0")
       const seconds = now.getSeconds().toString().padStart(2, "0")
-      setCurrentTime(${hours}:${minutes}:${seconds})
+      setCurrentTime(`${hours}:${minutes}:${seconds}`)
     }
 
     updateTime()
@@ -57,16 +64,39 @@ export default function Home() {
     return () => clearInterval(interval)
   }, [])
 
+  useEffect(() => {
+    if (typingInterval.current) clearInterval(typingInterval.current)
+
+    let i = 0
+    setDisplayedText("")
+
+    typingInterval.current = setInterval(() => {
+      setDisplayedText(fullText.slice(0, i + 1))
+      i++
+      if (i >= fullText.length && typingInterval.current) {
+        clearInterval(typingInterval.current)
+      }
+    }, 50)
+
+    return () => {
+      if (typingInterval.current) clearInterval(typingInterval.current)
+    }
+  }, [fullText])
+
   return (
     <div className="terminal-container relative">
-      {/* Top-left terminal-style emoji text */}
-      <div className="absolute top-4 left-4 z-50 text-green-500 font-mono text-sm md:text-base cursor-default glow transition-all duration-300 ease-in-out group">
-        <span className="group-hover:hidden">(/≧▽≦)/</span>
-        <span className="hidden group-hover:inline">☆*: .｡. o(≧▽≦)o .｡.:*☆</span>
+      {/* Top-left typing animated emoji text */}
+      <div
+        className="absolute top-4 left-4 z-50 text-green-500 font-mono text-sm md:text-base cursor-default glow transition-all duration-300 ease-in-out"
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+      >
+        {displayedText}
+        <span className="cursor" />
       </div>
 
-      {/* DiscordPresence top-right */}
-      <DiscordPresence userId={userId} />
+      {/* Discord presence */}
+      <DiscordPresence userId="1002839537644482611" />
 
       <main className="flex-1 py-8">
         <div className="mb-8">
@@ -79,7 +109,6 @@ export default function Home() {
           <SocialLinks />
         </div>
 
-        {/* Centered Show Artwork Button */}
         <div className="my-8 flex justify-center">
           <button
             onClick={() => setShowArtwork(!showArtwork)}
@@ -96,7 +125,7 @@ export default function Home() {
               {artworkData.map((artwork) => (
                 <div key={artwork.id} className="border border-gray-800 p-4 hover:border-green-500 transition-colors">
                   <img
-                    src={/${artwork.filename}}
+                    src={`/${artwork.filename}`}
                     alt={artwork.title}
                     className="w-full h-auto object-cover rounded shadow-lg mb-2"
                   />
