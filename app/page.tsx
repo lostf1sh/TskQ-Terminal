@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { DiscordPresence } from "@/components/discord-presence"
 import { Terminal } from "@/components/terminal"
 import { SocialLinks } from "@/components/social-links"
@@ -41,41 +41,9 @@ const artworkData = [
 export default function Home() {
   const [showArtwork, setShowArtwork] = useState(false)
   const [currentTime, setCurrentTime] = useState("")
-
-  // Typing animation setup
-  const [displayedText, setDisplayedText] = useState("")
-  const defaultText = "(/≧▽≦)/"
-  const hoverText = "☆*: .｡. o(≧▽≦)o .｡.:*☆"
-  const fullTextRef = useRef(defaultText)
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const lastTypedRef = useRef("")
-
-  const handleHover = (hovering: boolean) => {
-    const newText = hovering ? hoverText : defaultText
-    if (newText === fullTextRef.current) return
-    fullTextRef.current = newText
-    triggerTypingAnimation(newText)
-  }
-
-  const triggerTypingAnimation = (text: string) => {
-    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current)
-    let i = 0
-    setDisplayedText("")
-    const typeNext = () => {
-      setDisplayedText(text.slice(0, i + 1))
-      i++
-      if (i < text.length) {
-        typingTimeoutRef.current = setTimeout(typeNext, 50)
-      }
-    }
-    typeNext()
-    lastTypedRef.current = text
-  }
+  const [isHovering, setIsHovering] = useState(false)
 
   useEffect(() => {
-    // Initial typing
-    triggerTypingAnimation(defaultText)
-
     const updateTime = () => {
       const now = new Date()
       const hours = now.getHours().toString().padStart(2, "0")
@@ -86,22 +54,18 @@ export default function Home() {
 
     updateTime()
     const interval = setInterval(updateTime, 1000)
-    return () => {
-      clearInterval(interval)
-      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current)
-    }
+    return () => clearInterval(interval)
   }, [])
 
   return (
     <div className="terminal-container relative">
-      {/* ✅ Fixed hover-safe emoji text block */}
+      {/* ✅ Static emoji with glow and hover transition */}
       <div
-        className="absolute top-4 left-4 z-50 w-fit inline-flex flex-row text-green-500 font-mono text-sm md:text-base cursor-default glow transition-all duration-300 ease-in-out"
-        onPointerEnter={() => handleHover(true)}
-        onPointerLeave={() => handleHover(false)}
+        className="absolute top-4 left-4 z-50 inline-block text-green-500 font-mono text-sm md:text-base cursor-default glow transition-all duration-300 ease-in-out"
+        onPointerEnter={() => setIsHovering(true)}
+        onPointerLeave={() => setIsHovering(false)}
       >
-        <span>{displayedText}</span>
-        <span className="cursor" />
+        {isHovering ? "☆*: .｡. o(≧▽≦)o .｡.:*☆" : "(/≧▽≦)/"}
       </div>
 
       {/* DiscordPresence top-right */}
@@ -118,7 +82,7 @@ export default function Home() {
           <SocialLinks />
         </div>
 
-        {/* Show Artwork Button */}
+        {/* Centered Show Artwork Button */}
         <div className="my-8 flex justify-center">
           <button
             onClick={() => setShowArtwork(!showArtwork)}
