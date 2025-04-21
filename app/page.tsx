@@ -41,13 +41,13 @@ const artworkData = [
 export default function Home() {
   const [showArtwork, setShowArtwork] = useState(false)
   const [currentTime, setCurrentTime] = useState("")
+  const [isHovering, setIsHovering] = useState(false)
+  const [displayedText, setDisplayedText] = useState("")
 
   const defaultText = "(/≧▽≦)/"
   const hoverText = "☆*: .｡. o(≧▽≦)o .｡.:*☆"
-  const [displayedText, setDisplayedText] = useState("")
-  const [isHovering, setIsHovering] = useState(false)
-
-  const fullText = isHovering ? hoverText : defaultText
+  const currentText = isHovering ? hoverText : defaultText
+  const lastTypedRef = useRef<string>("")
   const typingInterval = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
@@ -65,15 +65,18 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
+    if (currentText === lastTypedRef.current) return
+
+    lastTypedRef.current = currentText
+    setDisplayedText("")
+    let i = 0
+
     if (typingInterval.current) clearInterval(typingInterval.current)
 
-    let i = 0
-    setDisplayedText("")
-
     typingInterval.current = setInterval(() => {
-      setDisplayedText(fullText.slice(0, i + 1))
+      setDisplayedText(currentText.slice(0, i + 1))
       i++
-      if (i >= fullText.length && typingInterval.current) {
+      if (i >= currentText.length && typingInterval.current) {
         clearInterval(typingInterval.current)
       }
     }, 50)
@@ -81,11 +84,11 @@ export default function Home() {
     return () => {
       if (typingInterval.current) clearInterval(typingInterval.current)
     }
-  }, [fullText])
+  }, [currentText])
 
   return (
     <div className="terminal-container relative">
-      {/* Top-left typing animated emoji text */}
+      {/* Top-left typing emoji text */}
       <div
         className="absolute top-4 left-4 z-50 text-green-500 font-mono text-sm md:text-base cursor-default glow transition-all duration-300 ease-in-out"
         onMouseEnter={() => setIsHovering(true)}
@@ -95,7 +98,7 @@ export default function Home() {
         <span className="cursor" />
       </div>
 
-      {/* Discord presence */}
+      {/* Top-right Discord presence */}
       <DiscordPresence userId="1002839537644482611" />
 
       <main className="flex-1 py-8">
@@ -109,6 +112,7 @@ export default function Home() {
           <SocialLinks />
         </div>
 
+        {/* Centered Show Artwork Button */}
         <div className="my-8 flex justify-center">
           <button
             onClick={() => setShowArtwork(!showArtwork)}
