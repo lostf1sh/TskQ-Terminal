@@ -36,6 +36,12 @@ const artworkData = [
     filename: "cho-reborn.png",
     description: "My first and probably last original character, reborn."
   },
+  {
+    id: 6,
+    title: "Practice Hand",
+    filename: "hand.png",
+    description: "Hand from practice day, referenced from pinterest."
+  },
 ]
 
 export default function Home() {
