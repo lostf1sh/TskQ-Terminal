@@ -42,6 +42,8 @@ export default function Home() {
   const [showArtwork, setShowArtwork] = useState(true)
   const [currentTime, setCurrentTime] = useState("")
   const [isHovering, setIsHovering] = useState(false)
+  const [showScrollDownArrow, setShowScrollDownArrow] = useState(true)
+  const [showBackToTopArrow, setShowBackToTopArrow] = useState(false)
 
   useEffect(() => {
     const updateTime = () => {
@@ -57,6 +59,28 @@ export default function Home() {
     return () => clearInterval(interval)
   }, [])
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY
+      const artworkSection = document.getElementById("artwork-section")
+      const artworkOffset = artworkSection?.offsetTop || 0
+
+      setShowScrollDownArrow(scrollY < 100 && showArtwork)
+      setShowBackToTopArrow(scrollY > artworkOffset - 100 && showArtwork)
+    }
+
+    handleScroll()
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [showArtwork])
+
+  const scrollTo = (targetId: string) => {
+    const target = document.getElementById(targetId)
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth" })
+    }
+  }
+
   return (
     <div className="terminal-container relative">
       {/* Hero emoji */}
@@ -68,7 +92,7 @@ export default function Home() {
         {isHovering ? "☆*: .｡. o(≧▽≦)o .｡.:*☆" : "(/≧▽≦)/"}
       </div>
 
-      {/* Discord presence top-right */}
+      {/* DiscordPresence */}
       <DiscordPresence userId="1002839537644482611" />
 
       <main className="flex-1 py-8">
@@ -77,14 +101,13 @@ export default function Home() {
           <Terminal showArtwork={showArtwork} setShowArtwork={setShowArtwork} />
         </div>
 
-        {/* Social links */}
         <div className="my-8">
           <h2 className="terminal-green mb-4 text-lg font-bold">$ ls ~/social</h2>
           <SocialLinks />
         </div>
 
-        {/* Show/Hide Button + Down Arrow */}
-        <div className="my-8 flex flex-col items-center">
+        {/* Show/Hide button + arrows */}
+        <div className="my-8 flex flex-col items-center relative">
           <button
             onClick={() => setShowArtwork(!showArtwork)}
             className="bg-black border border-green-500 text-green-500 px-4 py-2 rounded hover:bg-green-500 hover:text-black transition-colors"
@@ -92,22 +115,27 @@ export default function Home() {
             {showArtwork ? "Hide Artwork" : "Show Artwork"}
           </button>
 
-          {/* Scroll down arrow */}
-          <button
-            onClick={() => {
-              const target = document.getElementById("artwork-section")
-              if (target) {
-                target.scrollIntoView({ behavior: "smooth" })
-              }
-            }}
-            className="mt-4 text-green-500 text-5xl animate-bounce glow cursor-pointer select-none"
-            aria-label="Scroll to artwork"
-          >
-            ↓
-          </button>
+          {showArtwork && showScrollDownArrow && (
+            <button
+              onClick={() => scrollTo("artwork-section")}
+              className="mt-4 text-green-500 text-5xl animate-bounce glow cursor-pointer select-none"
+              aria-label="Scroll to artwork"
+            >
+              ↓
+            </button>
+          )}
+
+          {showArtwork && showBackToTopArrow && (
+            <button
+              onClick={() => scrollTo("top")}
+              className="fixed bottom-8 right-8 text-green-500 text-4xl glow cursor-pointer hover:text-black hover:bg-green-500 transition-colors px-3 py-2 rounded"
+              aria-label="Back to top"
+            >
+              ↑
+            </button>
+          )}
         </div>
 
-        {/* Artwork Section */}
         {showArtwork && (
           <div id="artwork-section" className="mt-8">
             <h2 className="terminal-green mb-4 text-lg font-bold">$ ls ~/artwork</h2>
@@ -131,7 +159,7 @@ export default function Home() {
         )}
       </main>
 
-      <div className="terminal-footer">
+      <div id="top" className="terminal-footer">
         <div className="terminal-white">
           © {new Date().getFullYear()} – TskQ (Not an actual copyright.)
         </div>
