@@ -43,6 +43,11 @@ export default function Home() {
   const [currentTime, setCurrentTime] = useState("")
   const userId = "1002839537644482611"
 
+  const defaultText = "(/≧▽≦)/"
+  const hoverText = "☆*: .｡. o(≧▽≦)o .｡.:*☆"
+  const [displayedText, setDisplayedText] = useState("")
+  const [fullText, setFullText] = useState(defaultText)
+
   useEffect(() => {
     const updateTime = () => {
       const now = new Date()
@@ -57,12 +62,30 @@ export default function Home() {
     return () => clearInterval(interval)
   }, [])
 
+  useEffect(() => {
+    let i = 0
+    setDisplayedText("")
+    const interval = setInterval(() => {
+      setDisplayedText(fullText.slice(0, i + 1))
+      i++
+      if (i >= fullText.length) clearInterval(interval)
+    }, 50)
+    return () => clearInterval(interval)
+  }, [fullText])
+
+  const handleHover = (hovering: boolean) => {
+    setFullText(hovering ? hoverText : defaultText)
+  }
+
   return (
     <div className="terminal-container relative">
-      {/* Top-left terminal-style emoji text */}
-      <div className="absolute top-4 left-4 z-50 text-green-500 font-mono text-sm md:text-base cursor-default glow transition-all duration-300 ease-in-out group">
-        <span className="group-hover:hidden">(/≧▽≦)/</span>
-        <span className="hidden group-hover:inline">☆*: .｡. o(≧▽≦)o .｡.:*☆</span>
+      {/* Top-left typing animated emoji text */}
+      <div
+        className="absolute top-4 left-4 z-50 text-green-500 font-mono text-sm md:text-base cursor-default glow transition-all duration-300 ease-in-out"
+        onMouseEnter={() => handleHover(true)}
+        onMouseLeave={() => handleHover(false)}
+      >
+        {displayedText}
       </div>
 
       {/* DiscordPresence top-right */}
