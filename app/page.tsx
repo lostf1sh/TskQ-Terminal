@@ -39,7 +39,7 @@ const artworkData = [
 ]
 
 export default function Home() {
-  const [showArtwork, setShowArtwork] = useState(true) // ✅ Show by default
+  const [showArtwork, setShowArtwork] = useState(true)
   const [currentTime, setCurrentTime] = useState("")
   const [isHovering, setIsHovering] = useState(false)
 
@@ -59,20 +59,16 @@ export default function Home() {
 
   return (
     <div className="terminal-container relative">
-      {/* ✅ Big glowing emoji in the top-left */}
+      {/* Hero emoji */}
       <div
         className="absolute top-6 left-6 z-50 text-green-500 font-mono text-5xl md:text-6xl lg:text-7xl leading-tight px-4 py-2 glow transition-all duration-300 ease-in-out"
         onPointerEnter={() => setIsHovering(true)}
         onPointerLeave={() => setIsHovering(false)}
       >
         {isHovering ? "☆*: .｡. o(≧▽≦)o .｡.:*☆" : "(/≧▽≦)/"}
-        {/* 👇 Arrow pointer */}
-        <div className="mt-4 text-center text-3xl animate-bounce glow pointer-events-none select-none">
-          ↓
-        </div>
       </div>
 
-      {/* DiscordPresence top-right */}
+      {/* Discord presence top-right */}
       <DiscordPresence userId="1002839537644482611" />
 
       <main className="flex-1 py-8">
@@ -81,24 +77,39 @@ export default function Home() {
           <Terminal showArtwork={showArtwork} setShowArtwork={setShowArtwork} />
         </div>
 
+        {/* Social links */}
         <div className="my-8">
           <h2 className="terminal-green mb-4 text-lg font-bold">$ ls ~/social</h2>
           <SocialLinks />
         </div>
 
-        {/* Toggle button (still optional) */}
-        <div className="my-8 flex justify-center">
+        {/* Show/Hide Button + Down Arrow */}
+        <div className="my-8 flex flex-col items-center">
           <button
             onClick={() => setShowArtwork(!showArtwork)}
             className="bg-black border border-green-500 text-green-500 px-4 py-2 rounded hover:bg-green-500 hover:text-black transition-colors"
           >
             {showArtwork ? "Hide Artwork" : "Show Artwork"}
           </button>
+
+          {/* Scroll down arrow */}
+          <button
+            onClick={() => {
+              const target = document.getElementById("artwork-section")
+              if (target) {
+                target.scrollIntoView({ behavior: "smooth" })
+              }
+            }}
+            className="mt-4 text-green-500 text-5xl animate-bounce glow cursor-pointer select-none"
+            aria-label="Scroll to artwork"
+          >
+            ↓
+          </button>
         </div>
 
-        {/* Masonry Artwork Grid */}
+        {/* Artwork Section */}
         {showArtwork && (
-          <div className="mt-8">
+          <div id="artwork-section" className="mt-8">
             <h2 className="terminal-green mb-4 text-lg font-bold">$ ls ~/artwork</h2>
             <div className="masonry">
               {artworkData.map((artwork) => (
