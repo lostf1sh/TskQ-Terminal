@@ -92,14 +92,15 @@ export default function Home() {
           </button>
         </div>
 
+        {/* Masonry Artwork Grid */}
         {showArtwork && (
           <div className="mt-8">
             <h2 className="terminal-green mb-4 text-lg font-bold">$ ls ~/artwork</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start auto-rows-auto">
+            <div className="masonry">
               {artworkData.map((artwork) => (
                 <div
                   key={artwork.id}
-                  className="flex flex-col border border-gray-800 p-4 hover:border-green-500 transition-colors rounded"
+                  className="masonry-item border border-gray-800 p-4 hover:border-green-500 transition-colors rounded bg-black"
                 >
                   <img
                     src={`/${artwork.filename}`}
