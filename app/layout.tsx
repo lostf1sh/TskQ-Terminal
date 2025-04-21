@@ -10,7 +10,7 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "( ͡° ͜ʖ ͡°)",
+  title: "(¬‿¬)",
   description: "Tskq's terminal based thing!",
     generator: 'TskQ'
 }
