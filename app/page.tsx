@@ -42,6 +42,12 @@ const artworkData = [
     filename: "hand.png",
     description: "Hand from practice day, referenced from pinterest."
   },
+  {
+    id: 7,
+    title: "Jacket practice",
+    filename: "jacket.png",
+    description: "Trying to improve drawing folds and different textures (Leather jacket in this case)."
+  },
 ]
 
 export default function Home() {
