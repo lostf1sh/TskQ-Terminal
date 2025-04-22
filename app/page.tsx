@@ -6,48 +6,13 @@ import { Terminal } from "@/components/terminal"
 import { SocialLinks } from "@/components/social-links"
 
 const artworkData = [
-  {
-    id: 1,
-    title: "Kiyosumi Fan-Art",
-    filename: "kiynale.png",
-    description: "An attempt to recreate 'The kiyosumi effect'"
-  },
-  {
-    id: 2,
-    title: "Kiyosumi Fan-Art",
-    filename: "kiyosketch.png",
-    description: "More of that messy art-style."
-  },
-  {
-    id: 3,
-    title: "Mash",
-    filename: "mashfr.png",
-    description: "An accurate representation of Mash of the toes"
-  },
-  {
-    id: 4,
-    title: "Osage Fan-Art",
-    filename: "osage.png",
-    description: "My first attempt on the messy art-style."
-  },
-  {
-    id: 5,
-    title: "Cho",
-    filename: "cho-reborn.png",
-    description: "My first and probably last original character, reborn."
-  },
-  {
-    id: 6,
-    title: "Practice Hand",
-    filename: "hand.png",
-    description: "Hand from practice day, referenced from pinterest."
-  },
-  {
-    id: 7,
-    title: "Jacket practice",
-    filename: "jacket.png",
-    description: "Trying to improve drawing folds and different textures (Leather jacket in this case)."
-  },
+  { id: 1, title: "Kiyosumi Fan-Art", filename: "kiynale.png", description: "An attempt to recreate 'The kiyosumi effect'" },
+  { id: 2, title: "Kiyosumi Fan-Art", filename: "kiyosketch.png", description: "More of that messy art-style." },
+  { id: 3, title: "Mash", filename: "mashfr.png", description: "An accurate representation of Mash of the toes" },
+  { id: 4, title: "Osage Fan-Art", filename: "osage.png", description: "My first attempt on the messy art-style." },
+  { id: 5, title: "Cho", filename: "cho-reborn.png", description: "My first and probably last original character, reborn." },
+  { id: 6, title: "Practice Hand", filename: "hand.png", description: "Hand from practice day, referenced from pinterest." },
+  { id: 7, title: "Jacket practice", filename: "jacket.png", description: "Trying to improve drawing folds and different textures (Leather jacket in this case)." },
 ]
 
 export default function Home() {
@@ -56,6 +21,10 @@ export default function Home() {
   const [isHovering, setIsHovering] = useState(false)
   const [showScrollDownArrow, setShowScrollDownArrow] = useState(true)
   const [showBackToTopArrow, setShowBackToTopArrow] = useState(false)
+
+  // Modal & zoom state
+  const [modalImage, setModalImage] = useState<{ src: string; alt: string } | null>(null)
+  const [zoom, setZoom] = useState(1)
 
   useEffect(() => {
     const updateTime = () => {
@@ -92,9 +61,7 @@ export default function Home() {
 
   const scrollToArtwork = () => {
     const target = document.getElementById("artwork-section")
-    if (target) {
-      target.scrollIntoView({ behavior: "smooth" })
-    }
+    if (target) target.scrollIntoView({ behavior: "smooth" })
   }
 
   return (
@@ -113,7 +80,7 @@ export default function Home() {
 
       <main className="flex-1 py-8">
         <div className="mb-8">
-          <p className="terminal-white mb-2">> Interactive Terminal Interface</p>
+          <p className="terminal-white mb-2">&gt; Interactive Terminal Interface</p>
           <Terminal showArtwork={showArtwork} setShowArtwork={setShowArtwork} />
         </div>
 
@@ -157,7 +124,11 @@ export default function Home() {
                   <img
                     src={`/${artwork.filename}`}
                     alt={artwork.title}
-                    className="w-full h-auto object-cover rounded shadow-lg mb-2"
+                    className="w-full h-auto object-cover rounded shadow-lg mb-2 cursor-zoom-in"
+                    onClick={() => {
+                      setModalImage({ src: `/${artwork.filename}`, alt: artwork.title })
+                      setZoom(1)
+                    }}
                   />
                   <h3 className="terminal-white font-bold">{artwork.title}</h3>
                   <p className="terminal-white text-sm opacity-80">{artwork.description}</p>
@@ -180,10 +151,33 @@ export default function Home() {
         </div>
       )}
 
-      <div className="terminal-footer" id="top">
-        <div className="terminal-white">
-          © {new Date().getFullYear()} – TskQ (Not an actual copyright.)
+      {/* Modal for full-image & zoom */}
+      {modalImage && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
+          onClick={() => setModalImage(null)}
+        >
+          <div
+            className="relative cursor-zoom-out"
+            onClick={(e) => e.stopPropagation()}
+            onWheel={(e) => {
+              e.preventDefault()
+              const delta = -e.deltaY * 0.001
+              setZoom((prev) => Math.min(Math.max(prev + delta, 1), 5))
+            }}
+          >
+            <img
+              src={modalImage.src}
+              alt={modalImage.alt}
+              style={{ transform: `scale(${zoom})`, transition: 'transform 0.3s ease' }}
+              className="max-w-full max-h-full object-contain"
+            />
+          </div>
         </div>
+      )}
+
+      <div className="terminal-footer" id="top">
+        <div className="terminal-white">© {new Date().getFullYear()} – TskQ (Not an actual copyright.)</div>
         <div className="text-right">
           <div className="terminal-white">system time: {currentTime}</div>
         </div>
