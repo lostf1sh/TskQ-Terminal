@@ -7,8 +7,6 @@ import { SocialLinks } from "@/components/social-links"
 
 const artworkData = [
   { id: 1, title: "Kiyosumi Fan-Art", filename: "kiynale.png", description: "An attempt to recreate 'The kiyosumi effect'" },
-  { id: 2, title: "Kiyosumi Fan-Art", filename: "kiyosketch.png", description: "More of that messy art-style." },
-  { id: 3, title: "Mash", filename: "mashfr.png", description: "An accurate representation of Mash of the toes" },
   { id: 4, title: "Osage Fan-Art", filename: "osage.png", description: "My first attempt on the messy art-style." },
   { id: 5, title: "Cho", filename: "cho-reborn.png", description: "My first and probably last original character, reborn." },
   { id: 6, title: "Practice Hand", filename: "hand.png", description: "Hand from practice day, referenced from pinterest." },
@@ -20,7 +18,7 @@ export default function Home() {
   const [currentTime, setCurrentTime] = useState("")
   const [isHovering, setIsHovering] = useState(false)
   const [showScrollDownArrow, setShowScrollDownArrow] = useState(true)
-  const [showBackToTopArrow, setShowBackToTopArrow] =State(false)
+  const [showBackToTopArrow, setShowBackToTopArrow] = useState(false)
 
   // Modal & zoom/pan state
   const [modalImage, setModalImage] = useState<{ src: string; alt: string } | null>(null)
@@ -116,16 +114,12 @@ export default function Home() {
           <button
             onClick={() => setShowArtwork(!showArtwork)}
             className="bg-black border border-green-500 text-green-500 px-4 py-2 rounded hover:bg-green-500 hover:text-black transition-colors"
-          >
-            {showArtwork ? "Hide Artwork" : "Show Artwork"}
-          </button>
+          >{showArtwork ? "Hide Artwork" : "Show Artwork"}</button>
           {showArtwork && (
             <div
               className={`mt-4 text-green-500 text-5xl transition-opacity duration-500 ${showScrollDownArrow ? "opacity-100" : "opacity-0 pointer-events-none"} animate-bounce glow cursor-pointer select-none`}
               onClick={scrollToArtwork}
-            >
-              ↓
-            </div>
+            >↓</div>
           )}
         </div>
         {showArtwork && (
@@ -150,53 +144,4 @@ export default function Home() {
 
       {showArtwork && (
         <div
-          className={`fixed bottom-6 left-1/2 -translate-x-1/2 bg-black bg-opacity-50 rounded px-4 py-2 text-green-500 text-4xl transition-opacity duration-500 ${showBackToTopArrow ? "opacity-100" : "opacity-0 pointer-events-none"} cursor-pointer glow`}
-          onClick={scrollToTop}
-        >
-          ↑
-        </div>
-      )}
-
-      {/* Modal overlay */}
-      {modalImage && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
-          onClick={() => setModalImage(null)}
-          onMouseUp={onMouseUp}
-          onTouchEnd={onTouchEnd}
-        >
-          {/* Image container */}
-          <div
-            className="relative cursor-grab touch-none"
-            onClick={e => e.stopPropagation()}
-            onWheel={e => {
-              e.preventDefault()
-              const delta = -e.deltaY * 0.001
-              setZoom(prev => prev + delta > 0 ? prev + delta : prev)
-            }}
-            onMouseDown={onMouseDown}
-            onMouseMove={onMouseMove}
-            onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
-          >
-            <img
-              src={modalImage.src} alt={modalImage.alt}
-              style={{ transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`, transition: dragging.current ? 'none' : 'transform 0.3s ease' }}
-              className="max-w-full max-h-full object-contain select-none"
-              draggable={false}
-            />
-          </div>
-          {/* Fixed scroll hint */}
-          <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-green-500 terminal-white text-sm px-2 py-1 rounded glow pointer-events-none">
-            Scroll to zoom in/out
-          </div>
-        </div>
-      )}
-
-      <div className="terminal-footer" id="top">
-        <div className="terminal-white">© {new Date().getFullYear()} – TskQ</div>
-        <div className="text-right"><div className="terminal-white">system time: {currentTime}</div></div>
-      </div>
-    </div>
-  )
-}
+          className={`fixed bottom-6 left-1/2 -translate-x-1/2 bg-black bg-opacity-50 rounded px-4 py-2 text-green-500 text-4xl transition-opacity duration-500 ${showBackToTopArrow ? "opcode
