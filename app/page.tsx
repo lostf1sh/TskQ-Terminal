@@ -8,11 +8,9 @@ import { SocialLinks } from "@/components/social-links"
 // Artwork metadata
 const artworkData = [
   { id: 1, title: "Kiyosumi Fan-Art", filename: "kiynale.png", description: "An attempt to recreate 'The kiyosumi effect'" },
-  { id: 2, title: "Osage Fan-Art", filename: "osage.png", description: "My first attempt on the messy art-style." },
-  { id: 3, title: "Cho", filename: "cho-reborn.png", description: "Original character reborn." },
-  { id: 4, title: "Practice Hand", filename: "hand.png", description: "Referenced from Pinterest" },
-  { id: 5, title: "Jacket Practice", filename: "jacket.png", description: "Leather jacket folds/textures" },
-  { id: 6, title: "Yuuri", filename: "Yuuri.jpeg", description: "From 'Girls last tour' my fav character, yuuri. :)" },
+  { id: 2, title: "Practice Hand", filename: "hand.png", description: "Referenced from Pinterest" },
+  { id: 3, title: "Jacket Practice", filename: "jacket.png", description: "Leather jacket folds/textures" },
+  { id: 4, title: "Yuuri", filename: "Yuuri.jpeg", description: "From 'Girls last tour' my fav character, yuuri. :)" },
 ]
 
 // Modal component for zoom + pan
