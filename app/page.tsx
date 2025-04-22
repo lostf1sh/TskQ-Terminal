@@ -8,10 +8,12 @@ import { SocialLinks } from "@/components/social-links"
 // Artwork metadata
 const artworkData = [
   { id: 1, title: "Kiyosumi Fan-Art", filename: "kiynale.png", description: "An attempt to recreate 'The kiyosumi effect'" },
-  { id: 2, title: "Osage Fan-Art", filename: "osage.png", description: "My first attempt on the messy art-style." },
-  { id: 3, title: "Cho", filename: "cho-reborn.png", description: "Original character reborn." },
-  { id: 4, title: "Practice Hand", filename: "hand.png", description: "Referenced from Pinterest" },
-  { id: 5, title: "Jacket Practice", filename: "jacket.png", description: "Leather jacket folds/textures" },
+  { id: 2, title: "Kiyosumi Fan-Art", filename: "kiyosketch.png", description: "More of that messy art-style." },
+  { id: 3, title: "Mash", filename: "mashfr.png", description: "An accurate representation of Mash of the toes" },
+  { id: 4, title: "Osage Fan-Art", filename: "osage.png", description: "My first attempt on the messy art-style." },
+  { id: 5, title: "Cho", filename: "cho-reborn.png", description: "Original character reborn." },
+  { id: 6, title: "Practice Hand", filename: "hand.png", description: "Referenced from Pinterest" },
+  { id: 7, title: "Jacket Practice", filename: "jacket.png", description: "Leather jacket folds/textures" },
 ]
 
 // Modal component for zoom + pan
@@ -96,15 +98,17 @@ export default function Home() {
   useEffect(() => {
     const onScroll = () => {
       const y = window.scrollY
-      const artTop = document.getElementById("artwork-section")?.offsetTop || Infinity
-      setScrollArrows({ down: y < 100, up: y > artTop - 100 })
+      const artSection = document.getElementById("artwork-section")
+      const artTop = artSection?.offsetTop || Infinity
+      setScrollArrows({ down: y < 100 && showArtwork, up: y > artTop - 100 && showArtwork })
     }
     onScroll()
     window.addEventListener("scroll", onScroll)
     return () => window.removeEventListener("scroll", onScroll)
-  }, [])
+  }, [showArtwork])
 
-  const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" })
+  const scrollToArtwork = () => document.getElementById("artwork-section")?.scrollIntoView({ behavior: "smooth" })
+  const scrollToTop = () => document.getElementById("top")?.scrollIntoView({ behavior: "smooth" })
   const openImage = (src: string, alt: string) => setModal({ src, alt })
 
   return (
@@ -140,11 +144,16 @@ export default function Home() {
           >
             {showArtwork ? "Hide Artwork" : "Show Artwork"}
           </button>
-          {showArtwork && scrollArrows.down && (
-            <span
-              className="text-green-400 text-4xl animate-bounce cursor-pointer"
-              onClick={() => scrollTo("artwork-section")}
-            >↓</span>
+          {/* Scroll down arrow */}
+          {scrollArrows.down && (
+            <div
+              className={`mt-4 text-green-500 text-5xl transition-opacity duration-500 ${
+                scrollArrows.down ? "opacity-100" : "opacity-0 pointer-events-none"
+              } animate-bounce glow cursor-pointer select-none`}
+              onClick={scrollToArtwork}
+            >
+              ↓
+            </div>
           )}
         </section>
 
@@ -172,11 +181,15 @@ export default function Home() {
       </main>
 
       {/* Back to top arrow */}
-      {scrollArrows.up && showArtwork && (
-        <button
-          onClick={() => scrollTo("top")}
-          className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-green-400 text-black px-4 py-2 rounded-full shadow-lg hover:scale-105 transition"
-        >↑</button>
+      {scrollArrows.up && (
+        <div
+          className={`fixed bottom-6 left-1/2 -translate-x-1/2 bg-black bg-opacity-50 rounded px-4 py-2 text-green-500 text-4xl transition-opacity duration-500 ${
+            scrollArrows.up ? "opacity-100" : "opacity-0 pointer-events-none"
+          } cursor-pointer glow`}
+          onClick={scrollToTop}
+        >
+          ↑
+        </div>
       )}
 
       {/* Footer */}
