@@ -53,7 +53,6 @@ function ZoomableModal({ src, alt, onClose }: { src: string; alt: string; onClos
     >
       <div
         className="relative cursor-grab w-[80vw] h-[80vh]"
-        onClick={e => e.stopPropagation()}
         onWheel={handleWheel}
         onMouseDown={startDrag}
         onMouseMove={onDrag}
@@ -62,10 +61,14 @@ function ZoomableModal({ src, alt, onClose }: { src: string; alt: string; onClos
           src={src}
           alt={alt}
           draggable={false}
+          onClick={e => e.stopPropagation()}
           className="w-full h-full object-contain select-none transition-transform duration-200 ease-out"
           style={{ transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})` }}
         />
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-60 text-green-400 font-mono text-sm px-3 py-1 rounded shadow-lg">
+        <div
+          className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-60 text-green-400 font-mono text-sm px-3 py-1 rounded shadow-lg"
+          onClick={e => e.stopPropagation()}
+        >
           Scroll to zoom in/out
         </div>
       </div>
