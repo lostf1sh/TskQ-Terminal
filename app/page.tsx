@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { useState, useEffect, useRef, useCallback } from "react"
 import { DiscordPresence } from "@/components/discord-presence"
@@ -62,7 +62,7 @@ function ZoomableModal({ src, alt, onClose }: { src: string; alt: string; onClos
           src={src} alt={alt}
           draggable={false}
           className="max-w-full max-h-full object-contain select-none transition-transform duration-200 ease-out"
-          style={{ transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})` }}
+          style={{ transform: translate(${offset.x}px, ${offset.y}px) scale(${zoom}) }}
         />
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-60 text-green-400 font-mono text-sm px-3 py-1 rounded shadow-lg">
           Scroll to zoom in/out
@@ -146,7 +146,7 @@ export default function Home() {
           </button>
           {/* Scroll down arrow */}
           <div
-            className={`mt-4 text-green-500 text-5xl transition-opacity duration-500 ${scrollArrows.down ? "opacity-100" : "opacity-0"} pointer-events-${scrollArrows.down ? "auto" : "none"} animate-bounce glow cursor-pointer select-none`}
+            className={mt-4 text-green-500 text-5xl transition-opacity duration-500 ${scrollArrows.down ? "opacity-100" : "opacity-0"} pointer-events-${scrollArrows.down ? "auto" : "none"} animate-bounce glow cursor-pointer select-none}
             onClick={scrollToArtwork}
           >
             ↓
@@ -156,9 +156,6 @@ export default function Home() {
         {showArtwork && (
           <section id="artwork-section" className="mb-12">
             <h2 className="font-mono text-green-400 text-lg mb-4">$ ls ~/artwork</h2>
-            <p className="terminal-white text-sm opacity-80 mb-4">
-              I upscale all my drawings by 4x via "Topaz Photo AI" which gives it that characteristic look - If you have any questions regarding my work, feel free to drop a dm on discord~! ^-^
-            </p>
             <div className="masonry">
               {artworkData.map(a => (
                 <div
@@ -166,9 +163,9 @@ export default function Home() {
                   className="masonry-item border border-gray-800 p-4 hover:border-green-500 transition-colors rounded bg-black"
                 >
                   <img
-                    src={`/${a.filename}`} alt={a.title}
+                    src={/${a.filename}} alt={a.title}
                     className="w-full h-auto object-cover rounded shadow-lg mb-2 cursor-zoom-in"
-                    onClick={() => openImage(`/${a.filename}`, a.title)}
+                    onClick={() => openImage(/${a.filename}, a.title)}
                   />
                   <h3 className="terminal-white font-bold">{a.title}</h3>
                   <p className="terminal-white text-sm opacity-80">{a.description}</p>
@@ -181,7 +178,7 @@ export default function Home() {
 
       {/* Back to top arrow */}
       <div
-        className={`fixed bottom-6 left-1/2 -translate-x-1/2 bg-black bg-opacity-50 rounded px-4 py-2 text-green-500 text-4xl transition-opacity duration-500 ${scrollArrows.up ? "opacity-100" : "opacity-0"} pointer-events-${scrollArrows.up ? "auto" : "none"} cursor-pointer glow`}
+        className={fixed bottom-6 left-1/2 -translate-x-1/2 bg-black bg-opacity-50 rounded px-4 py-2 text-green-500 text-4xl transition-opacity duration-500 ${scrollArrows.up ? "opacity-100" : "opacity-0"} pointer-events-${scrollArrows.up ? "auto" : "none"} cursor-pointer glow}
         onClick={scrollToTop}
       >
         ↑
@@ -202,4 +199,5 @@ export default function Home() {
         />
       )}
     </div>
+  )
 }
