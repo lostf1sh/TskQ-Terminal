@@ -26,6 +26,18 @@ export default function Home() {
   const [modalImage, setModalImage] = useState<{ src: string; alt: string } | null>(null)
   const [zoom, setZoom] = useState(1)
 
+  // Prevent background scrolling when modal is open
+  useEffect(() => {
+    if (modalImage) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [modalImage])
+
   useEffect(() => {
     const updateTime = () => {
       const now = new Date()
