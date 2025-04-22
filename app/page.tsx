@@ -1,147 +1,200 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { DiscordPresence } from "@/components/discord-presence"
 import { Terminal } from "@/components/terminal"
 import { SocialLinks } from "@/components/social-links"
 
+// Artwork metadata
 const artworkData = [
   { id: 1, title: "Kiyosumi Fan-Art", filename: "kiynale.png", description: "An attempt to recreate 'The kiyosumi effect'" },
-  { id: 4, title: "Osage Fan-Art", filename: "osage.png", description: "My first attempt on the messy art-style." },
-  { id: 5, title: "Cho", filename: "cho-reborn.png", description: "My first and probably last original character, reborn." },
-  { id: 6, title: "Practice Hand", filename: "hand.png", description: "Hand from practice day, referenced from pinterest." },
-  { id: 7, title: "Jacket practice", filename: "jacket.png", description: "Trying to improve drawing folds and different textures (Leather jacket in this case)." },
+  { id: 2, title: "Osage Fan-Art", filename: "osage.png", description: "My first attempt on the messy art-style." },
+  { id: 3, title: "Cho", filename: "cho-reborn.png", description: "Original character reborn." },
+  { id: 4, title: "Practice Hand", filename: "hand.png", description: "Referenced from Pinterest" },
+  { id: 5, title: "Jacket Practice", filename: "jacket.png", description: "Leather jacket folds/textures" },
 ]
 
-export default function Home() {
-  const [showArtwork, setShowArtwork] = useState(true)
-  const [currentTime, setCurrentTime] = useState("")
-  const [isHovering, setIsHovering] = useState(false)
-  const [showScrollDownArrow, setShowScrollDownArrow] = useState(true)
-  const [showBackToTopArrow, setShowBackToTopArrow] = useState(false)
-
-  // Modal & zoom/pan state
-  const [modalImage, setModalImage] = useState<{ src: string; alt: string } | null>(null)
+// Modal component for zoom + pan
+function ZoomableModal({ src, alt, onClose }: { src: string; alt: string; onClose: () => void }) {
   const [zoom, setZoom] = useState(1)
   const [offset, setOffset] = useState({ x: 0, y: 0 })
   const dragging = useRef(false)
   const lastPos = useRef({ x: 0, y: 0 })
 
-  // Prevent background scrolling when modal is open
+  // Lock background scroll
   useEffect(() => {
-    document.body.style.overflow = modalImage ? 'hidden' : ''
-    return () => { document.body.style.overflow = '' }
-  }, [modalImage])
-
-  // Live clock
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date()
-      const h = now.getHours().toString().padStart(2, "0")
-      const m = now.getMinutes().toString().padStart(2, "0")
-      const s = now.getSeconds().toString().padStart(2, "0")
-      setCurrentTime(`${h}:${m}:${s}`)
-    }
-    updateTime()
-    const interval = setInterval(updateTime, 1000)
-    return () => clearInterval(interval)
+    document.body.style.overflow = "hidden"
+    return () => { document.body.style.overflow = "auto" }
   }, [])
 
-  // Scroll arrows visibility
-  useEffect(() => {
-    const handleScroll = () => {
-      const y = window.scrollY
-      const topOfArt = document.getElementById("artwork-section")?.offsetTop || 0
-      setShowScrollDownArrow(y < 100 && showArtwork)
-      setShowBackToTopArrow(y > topOfArt - 100 && showArtwork)
-    }
-    handleScroll()
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [showArtwork])
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    e.preventDefault()
+    const delta = -e.deltaY * 0.001
+    setZoom(z => Math.max(z + delta, 0.1))
+  }, [])
 
-  // Unified pan handlers
-  const startDrag = (x: number, y: number) => { dragging.current = true; lastPos.current = { x, y } }
-  const dragMove = (x: number, y: number) => {
+  const startDrag = (e: React.MouseEvent) => {
+    dragging.current = true
+    lastPos.current = { x: e.clientX, y: e.clientY }
+  }
+  const onDrag = (e: React.MouseEvent) => {
     if (!dragging.current) return
-    const dx = x - lastPos.current.x
-    const dy = y - lastPos.current.y
-    setOffset(prev => ({ x: prev.x + dx, y: prev.y + dy }))
-    lastPos.current = { x, y }
+    const dx = e.clientX - lastPos.current.x
+    const dy = e.clientY - lastPos.current.y
+    setOffset(o => ({ x: o.x + dx, y: o.y + dy }))
+    lastPos.current = { x: e.clientX, y: e.clientY }
   }
   const endDrag = () => { dragging.current = false }
 
-  const onMouseDown = (e: React.MouseEvent) => startDrag(e.clientX, e.clientY)
-  const onMouseMove = (e: React.MouseEvent) => dragMove(e.clientX, e.clientY)
-  const onMouseUp = () => endDrag()
-  const onTouchStart = (e: React.TouchEvent) => startDrag(e.touches[0].clientX, e.touches[0].clientY)
-  const onTouchMove = (e: React.TouchEvent) => { e.preventDefault(); dragMove(e.touches[0].clientX, e.touches[0].clientY) }
-  const onTouchEnd = () => endDrag()
+  return (
+    <div
+      className="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300"
+      onClick={onClose}
+      onMouseUp={endDrag}
+    >
+      <div
+        className="relative cursor-grab"
+        onClick={e => e.stopPropagation()}
+        onWheel={handleWheel}
+        onMouseDown={startDrag}
+        onMouseMove={onDrag}
+      >
+        <img
+          src={src} alt={alt}
+          draggable={false}
+          className="max-w-full max-h-full object-contain select-none transition-transform duration-200 ease-out"
+          style={{ transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})` }}
+        />
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-60 text-green-400 font-mono text-sm px-3 py-1 rounded shadow-lg">
+          Scroll to zoom in/out
+        </div>
+      </div>
+    </div>
+  )
+}
 
-  // Open image in modal
-  const openImage = (src: string, alt: string) => {
-    setOffset({ x: 0, y: 0 })
-    setZoom(1)
-    setModalImage({ src, alt })
-  }
+// Main page
+export default function Home() {
+  const [showArtwork, setShowArtwork] = useState(true)
+  const [currentTime, setCurrentTime] = useState("")
+  const [hoverEmoji, setHoverEmoji] = useState(false)
+  const [scrollArrows, setScrollArrows] = useState({ down: true, up: false })
+  const [modal, setModal] = useState<{ src: string; alt: string } | null>(null)
 
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" })
-  const scrollToArtwork = () => document.getElementById("artwork-section")?.scrollIntoView({ behavior: "smooth" })
+  // Clock
+  useEffect(() => {
+    const tick = () => {
+      const now = new Date()
+      setCurrentTime(now.toLocaleTimeString())
+    }
+    tick()
+    const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
+  }, [])
+
+  // Scroll arrow visibility
+  useEffect(() => {
+    const onScroll = () => {
+      const y = window.scrollY
+      const artTop = document.getElementById("artwork-section")?.offsetTop || Infinity
+      setScrollArrows({ down: y < 100, up: y > artTop - 100 })
+    }
+    onScroll()
+    window.addEventListener("scroll", onScroll)
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
+
+  const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" })
+  const openImage = (src: string, alt: string) => setModal({ src, alt })
 
   return (
-    <div className="terminal-container relative">
-      {/* Hero emoji */}
-      <div
-        className="absolute top-6 left-6 z-50 text-green-500 font-mono text-5xl md:text-6xl lg:text-7xl px-4 py-2 glow transition-all duration-300 ease-in-out"
-        onPointerEnter={() => setIsHovering(true)}
-        onPointerLeave={() => setIsHovering(false)}
-      >
-        {isHovering ? "☆*: .｡. o(≧▽≦)o .｡.:*☆" : "(/≧▽≦)/"}
+    <div className="min-h-screen flex flex-col bg-black text-white">
+      {/* Navbar / Presence */}
+      <div className="absolute top-6 left-6 z-50">
+        <span
+          className="font-mono text-green-400 text-5xl hover:text-green-200 transition-colors"
+          onMouseEnter={() => setHoverEmoji(true)}
+          onMouseLeave={() => setHoverEmoji(false)}
+        >
+          {hoverEmoji ? "☆*: .｡. o(≧▽≦)o .｡.:*☆" : "(/≧▽≦)/"}
+        </span>
       </div>
-
       <DiscordPresence userId="1002839537644482611" />
 
-      <main className="flex-1 py-8">
-        <div className="mb-8">
-          <p className="terminal-white mb-2">&gt; Interactive Terminal Interface</p>
+      {/* Main content */}
+      <main className="flex-1 px-6 py-8">
+        <section className="mb-12">
+          <p className="font-mono text-green-300 mb-2">&gt; Interactive Terminal Interface</p>
           <Terminal showArtwork={showArtwork} setShowArtwork={setShowArtwork} />
-        </div>
-        <div className="my-8">
-          <h2 className="terminal-green mb-4 text-lg font-bold">$ ls ~/social</h2>
+        </section>
+
+        <section className="mb-12">
+          <h2 className="font-mono text-green-400 text-lg mb-4">$ ls ~/social</h2>
           <SocialLinks />
-        </div>
-        <div className="my-8 flex flex-col items-center">
+        </section>
+
+        <section className="flex flex-col items-center mb-12 space-y-4">
           <button
-            onClick={() => setShowArtwork(!showArtwork)}
-            className="bg-black border border-green-500 text-green-500 px-4 py-2 rounded hover:bg-green-500 hover:text-black transition-colors"
-          >{showArtwork ? "Hide Artwork" : "Show Artwork"}</button>
-          {showArtwork && (
-            <div
-              className={`mt-4 text-green-500 text-5xl transition-opacity duration-500 ${showScrollDownArrow ? "opacity-100" : "opacity-0 pointer-events-none"} animate-bounce glow cursor-pointer select-none`}
-              onClick={scrollToArtwork}
-            >↓</div>
+            onClick={() => setShowArtwork(v => !v)}
+            className="px-5 py-2 border border-green-400 text-green-400 hover:bg-green-400 hover:text-black rounded transition"
+          >
+            {showArtwork ? "Hide Artwork" : "Show Artwork"}
+          </button>
+          {showArtwork && scrollArrows.down && (
+            <span
+              className="text-green-400 text-4xl animate-bounce cursor-pointer"
+              onClick={() => scrollTo("artwork-section")}
+            >↓</span>
           )}
-        </div>
+        </section>
+
         {showArtwork && (
-          <div id="artwork-section" className="mt-8">
-            <h2 className="terminal-green mb-4 text-lg font-bold">$ ls ~/artwork</h2>
-            <div className="masonry">
+          <section id="artwork-section" className="mb-12">
+            <h2 className="font-mono text-green-400 text-lg mb-4">$ ls ~/artwork</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {artworkData.map(a => (
-                <div key={a.id} className="masonry-item border border-gray-800 p-4 hover:border-green-500 transition-colors rounded bg-black">
+                <div
+                  key={a.id}
+                  className="bg-gray-900 rounded overflow-hidden shadow-lg hover:shadow-xl transition"
+                >
                   <img
                     src={`/${a.filename}`} alt={a.title}
-                    className="w-full h-auto object-cover rounded shadow-lg mb-2 cursor-zoom-in"
+                    className="w-full h-48 object-cover cursor-pointer"
                     onClick={() => openImage(`/${a.filename}`, a.title)}
                   />
-                  <h3 className="terminal-white font-bold">{a.title}</h3>
-                  <p className="terminal-white text-sm opacity-80">{a.description}</p>
+                  <div className="p-4">
+                    <h3 className="font-semibold text-green-200">{a.title}</h3>
+                    <p className="text-gray-400 text-sm">{a.description}</p>
+                  </div>
                 </div>
               ))}
             </div>
-          </div>
+          </section>
         )}
       </main>
 
-      {showArtwork && (
-        <div
-          className={`fixed bottom-6 left-1/2 -translate-x-1/2 bg-black bg-opacity-50 rounded px-4 py-2 text-green-500 text-4xl transition-opacity duration-500 ${showBackToTopArrow ? "opcode
+      {/* Back to top arrow */}
+      {scrollArrows.up && showArtwork && (
+        <button
+          onClick={() => scrollTo("top")}
+          className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-green-400 text-black px-4 py-2 rounded-full shadow-lg hover:scale-105 transition"
+        >↑</button>
+      )}
+
+      {/* Footer */}
+      <footer className="text-center py-4 font-mono text-gray-500" id="top">
+        © {new Date().getFullYear()} – TskQ
+        <div className="mt-1">system time: {currentTime}</div>
+      </footer>
+
+      {/* Modal */}
+      {modal && (
+        <ZoomableModal
+          src={modal.src}
+          alt={modal.alt}
+          onClose={() => setModal(null)}
+        />
+      )}
+    </div>
+  )
+}
