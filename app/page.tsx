@@ -81,12 +81,15 @@ export default function Home() {
   const [scrollArrows, setScrollArrows] = useState({ down: true, up: false })
   const [modal, setModal] = useState<{ src: string; alt: string } | null>(null)
 
+  // Always show vertical scrollbar to prevent layout shift
+  useEffect(() => {
+    document.body.style.overflowY = 'scroll'
+    return () => { document.body.style.overflowY = '' }
+  }, [])
+
   // Clock
   useEffect(() => {
-    const tick = () => {
-      const now = new Date()
-      setCurrentTime(now.toLocaleTimeString())
-    }
+    const tick = () => setCurrentTime(new Date().toLocaleTimeString())
     tick()
     const id = setInterval(tick, 1000)
     return () => clearInterval(id)
@@ -105,8 +108,8 @@ export default function Home() {
     return () => window.removeEventListener("scroll", onScroll)
   }, [showArtwork])
 
-  const scrollToArtwork = () => document.getElementById("artwork-section")?.scrollIntoView({ behavior: "smooth" })
-  const scrollToTop = () => document.getElementById("top")?.scrollIntoView({ behavior: "smooth" })
+  const scrollToArtwork = () => window.scrollTo({ top: document.getElementById("artwork-section")?.offsetTop || 0, behavior: "smooth" })
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" })
   const openImage = (src: string, alt: string) => setModal({ src, alt })
 
   return (
@@ -143,16 +146,12 @@ export default function Home() {
             {showArtwork ? "Hide Artwork" : "Show Artwork"}
           </button>
           {/* Scroll down arrow */}
-          {scrollArrows.down && (
-            <div
-              className={`mt-4 text-green-500 text-5xl transition-opacity duration-500 ${
-                scrollArrows.down ? "opacity-100" : "opacity-0 pointer-events-none"
-              } animate-bounce glow cursor-pointer select-none`}
-              onClick={scrollToArtwork}
-            >
-              ↓
-            </div>
-          )}
+          <div
+            className={`mt-4 text-green-500 text-5xl transition-opacity duration-500 ${scrollArrows.down ? "opacity-100" : "opacity-0"} pointer-events-${scrollArrows.down ? "auto" : "none"} animate-bounce glow cursor-pointer select-none`}
+            onClick={scrollToArtwork}
+          >
+            ↓
+          </div>
         </section>
 
         {showArtwork && (
@@ -179,19 +178,15 @@ export default function Home() {
       </main>
 
       {/* Back to top arrow */}
-      {scrollArrows.up && (
-        <div
-          className={`fixed bottom-6 left-1/2 -translate-x-1/2 bg-black bg-opacity-50 rounded px-4 py-2 text-green-500 text-4xl transition-opacity duration-500 ${
-            scrollArrows.up ? "opacity-100" : "opacity-0 pointer-events-none"
-          } cursor-pointer glow`}
-          onClick={scrollToTop}
-        >
-          ↑
-        </div>
-      )}
+      <div
+        className={`fixed bottom-6 left-1/2 -translate-x-1/2 bg-black bg-opacity-50 rounded px-4 py-2 text-green-500 text-4xl transition-opacity duration-500 ${scrollArrows.up ? "opacity-100" : "opacity-0"} pointer-events-${scrollArrows.up ? "auto" : "none"} cursor-pointer glow`}
+        onClick={scrollToTop}
+      >
+        ↑
+      </div>
 
       {/* Footer */}
-      <footer className="text-center py-4 font-mono text-gray-500" id="top">
+      <footer className="text-center py-4 font-mono text-gray-500">
         © {new Date().getFullYear()} – TskQ
         <div className="mt-1">system time: {currentTime}</div>
       </footer>
