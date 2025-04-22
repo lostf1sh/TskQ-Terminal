@@ -1,4 +1,4 @@
-use client
+"use client";
 
 import { useState, useEffect, useRef, useCallback } from "react"
 import { DiscordPresence } from "@/components/discord-presence"
@@ -202,5 +202,4 @@ export default function Home() {
         />
       )}
     </div>
-  )
 }
