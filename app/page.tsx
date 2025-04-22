@@ -12,7 +12,7 @@ const artworkData = [
   { id: 3, title: "Cho", filename: "cho-reborn.png", description: "Original character reborn." },
   { id: 4, title: "Practice Hand", filename: "hand.png", description: "Referenced from Pinterest" },
   { id: 5, title: "Jacket Practice", filename: "jacket.png", description: "Leather jacket folds/textures" },
-  { id: 6, title: "Yuuri", filename: "Yuuri.jpg", description: "From 'Girls last tour' my fav character, yuuri. :)" },
+  { id: 6, title: "Yuuri", filename: "Yuuri.jpeg", description: "From 'Girls last tour' my fav character, yuuri. :)" },
 ]
 
 // Modal component for zoom + pan
