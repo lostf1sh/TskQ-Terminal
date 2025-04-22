@@ -151,21 +151,19 @@ export default function Home() {
         {showArtwork && (
           <section id="artwork-section" className="mb-12">
             <h2 className="font-mono text-green-400 text-lg mb-4">$ ls ~/artwork</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="masonry">
               {artworkData.map(a => (
                 <div
                   key={a.id}
-                  className="bg-gray-900 rounded overflow-hidden shadow-lg hover:shadow-xl transition"
+                  className="masonry-item border border-gray-800 p-4 hover:border-green-500 transition-colors rounded bg-black"
                 >
                   <img
                     src={`/${a.filename}`} alt={a.title}
-                    className="w-full h-48 object-cover cursor-pointer"
+                    className="w-full h-auto object-cover rounded shadow-lg mb-2 cursor-zoom-in"
                     onClick={() => openImage(`/${a.filename}`, a.title)}
                   />
-                  <div className="p-4">
-                    <h3 className="font-semibold text-green-200">{a.title}</h3>
-                    <p className="text-gray-400 text-sm">{a.description}</p>
-                  </div>
+                  <h3 className="terminal-white font-bold">{a.title}</h3>
+                  <p className="terminal-white text-sm opacity-80">{a.description}</p>
                 </div>
               ))}
             </div>
