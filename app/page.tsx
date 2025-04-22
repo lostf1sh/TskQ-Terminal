@@ -1,4 +1,4 @@
-"use client"
+use client
 
 import { useState, useEffect, useRef, useCallback } from "react"
 import { DiscordPresence } from "@/components/discord-presence"
@@ -156,6 +156,9 @@ export default function Home() {
         {showArtwork && (
           <section id="artwork-section" className="mb-12">
             <h2 className="font-mono text-green-400 text-lg mb-4">$ ls ~/artwork</h2>
+            <p className="terminal-white text-sm opacity-80 mb-4">
+              I upscale all my drawings by 4x via "Topaz Photo AI" which gives it that characteristic look - If you have any questions regarding my work, feel free to drop a dm on discord~! ^-^
+            </p>
             <div className="masonry">
               {artworkData.map(a => (
                 <div
