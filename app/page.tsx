@@ -57,6 +57,13 @@ function ZoomableModal({ src, alt, onClose }: { src: string; alt: string; onClos
         onMouseDown={startDrag}
         onMouseMove={onDrag}
       >
+        {/* Close button */}
+        <button
+          onClick={(e) => { e.stopPropagation(); onClose(); }}
+          className="absolute top-2 left-2 z-10 text-white bg-black bg-opacity-60 hover:bg-opacity-80 rounded p-1 font-bold"
+        >
+          ✕
+        </button>
         <img
           src={src}
           alt={alt}
