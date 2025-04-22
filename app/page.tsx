@@ -20,7 +20,7 @@ export default function Home() {
   const [currentTime, setCurrentTime] = useState("")
   const [isHovering, setIsHovering] = useState(false)
   const [showScrollDownArrow, setShowScrollDownArrow] = useState(true)
-  const [showBackToTopArrow, setShowBackToTopArrow] = useState(false)
+  const [showBackToTopArrow, setShowBackToTopArrow] =State(false)
 
   // Modal & zoom/pan state
   const [modalImage, setModalImage] = useState<{ src: string; alt: string } | null>(null)
@@ -62,29 +62,33 @@ export default function Home() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [showArtwork])
 
-  // Handlers for pan
-  const onMouseDown = (e: React.MouseEvent) => {
-    dragging.current = true
-    lastPos.current = { x: e.clientX, y: e.clientY }
-  }
-  const onMouseMove = (e: React.MouseEvent) => {
+  // Unified pan handlers
+  const startDrag = (x: number, y: number) => { dragging.current = true; lastPos.current = { x, y } }
+  const dragMove = (x: number, y: number) => {
     if (!dragging.current) return
-    const dx = e.clientX - lastPos.current.x
-    const dy = e.clientY - lastPos.current.y
+    const dx = x - lastPos.current.x
+    const dy = y - lastPos.current.y
     setOffset(prev => ({ x: prev.x + dx, y: prev.y + dy }))
-    lastPos.current = { x: e.clientX, y: e.clientY }
+    lastPos.current = { x, y }
   }
-  const onMouseUp = () => { dragging.current = false }
+  const endDrag = () => { dragging.current = false }
 
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" })
-  const scrollToArtwork = () => document.getElementById("artwork-section")?.scrollIntoView({ behavior: "smooth" })
+  const onMouseDown = (e: React.MouseEvent) => startDrag(e.clientX, e.clientY)
+  const onMouseMove = (e: React.MouseEvent) => dragMove(e.clientX, e.clientY)
+  const onMouseUp = () => endDrag()
+  const onTouchStart = (e: React.TouchEvent) => startDrag(e.touches[0].clientX, e.touches[0].clientY)
+  const onTouchMove = (e: React.TouchEvent) => { e.preventDefault(); dragMove(e.touches[0].clientX, e.touches[0].clientY) }
+  const onTouchEnd = () => endDrag()
 
-  // Reset pan/zoom when opening a new image
+  // Open image in modal
   const openImage = (src: string, alt: string) => {
     setOffset({ x: 0, y: 0 })
     setZoom(1)
     setModalImage({ src, alt })
   }
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" })
+  const scrollToArtwork = () => document.getElementById("artwork-section")?.scrollIntoView({ behavior: "smooth" })
 
   return (
     <div className="terminal-container relative">
@@ -93,7 +97,9 @@ export default function Home() {
         className="absolute top-6 left-6 z-50 text-green-500 font-mono text-5xl md:text-6xl lg:text-7xl px-4 py-2 glow transition-all duration-300 ease-in-out"
         onPointerEnter={() => setIsHovering(true)}
         onPointerLeave={() => setIsHovering(false)}
-      >{isHovering ? "☆*: .｡. o(≧▽≦)o .｡.:*☆" : "(/≧▽≦)/"}</div>
+      >
+        {isHovering ? "☆*: .｡. o(≧▽≦)o .｡.:*☆" : "(/≧▽≦)/"}
+      </div>
 
       <DiscordPresence userId="1002839537644482611" />
 
@@ -110,12 +116,16 @@ export default function Home() {
           <button
             onClick={() => setShowArtwork(!showArtwork)}
             className="bg-black border border-green-500 text-green-500 px-4 py-2 rounded hover:bg-green-500 hover:text-black transition-colors"
-          >{showArtwork ? "Hide Artwork" : "Show Artwork"}</button>
+          >
+            {showArtwork ? "Hide Artwork" : "Show Artwork"}
+          </button>
           {showArtwork && (
             <div
               className={`mt-4 text-green-500 text-5xl transition-opacity duration-500 ${showScrollDownArrow ? "opacity-100" : "opacity-0 pointer-events-none"} animate-bounce glow cursor-pointer select-none`}
               onClick={scrollToArtwork}
-            >↓</div>
+            >
+              ↓
+            </div>
           )}
         </div>
         {showArtwork && (
@@ -142,17 +152,22 @@ export default function Home() {
         <div
           className={`fixed bottom-6 left-1/2 -translate-x-1/2 bg-black bg-opacity-50 rounded px-4 py-2 text-green-500 text-4xl transition-opacity duration-500 ${showBackToTopArrow ? "opacity-100" : "opacity-0 pointer-events-none"} cursor-pointer glow`}
           onClick={scrollToTop}
-        >↑</div>
+        >
+          ↑
+        </div>
       )}
 
+      {/* Modal overlay */}
       {modalImage && (
         <div
           className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
           onClick={() => setModalImage(null)}
           onMouseUp={onMouseUp}
+          onTouchEnd={onTouchEnd}
         >
+          {/* Image container */}
           <div
-            className="relative cursor-grab"
+            className="relative cursor-grab touch-none"
             onClick={e => e.stopPropagation()}
             onWheel={e => {
               e.preventDefault()
@@ -161,6 +176,8 @@ export default function Home() {
             }}
             onMouseDown={onMouseDown}
             onMouseMove={onMouseMove}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
           >
             <img
               src={modalImage.src} alt={modalImage.alt}
@@ -168,9 +185,10 @@ export default function Home() {
               className="max-w-full max-h-full object-contain select-none"
               draggable={false}
             />
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black bg-opacity-50 text-green-500 terminal-white text-sm px-2 py-1 rounded glow pointer-events-none">
-              Scroll to zoom in/out
-            </div>
+          </div>
+          {/* Fixed scroll hint */}
+          <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-green-500 terminal-white text-sm px-2 py-1 rounded glow pointer-events-none">
+            Scroll to zoom in/out
           </div>
         </div>
       )}
