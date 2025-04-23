@@ -7,10 +7,10 @@ import { SocialLinks } from "@/components/social-links"
 
 // Artwork metadata
 const artworkData = [
-  { id: 1, title: "Kiyosumi Fan-Art", filename: "kiynale.png", description: "An attempt to recreate 'The kiyosumi effect'" },
-  { id: 2, title: "Practice Hand", filename: "hand.png", description: "Referenced from Pinterest" },
+  { id: 2, title: "Kiyosumi Fan-Art", filename: "kiynale.png", description: "An attempt to recreate 'The kiyosumi effect'" },
+  { id: 4, title: "Practice Hand", filename: "hand.png", description: "Referenced from Pinterest" },
   { id: 3, title: "Jacket Practice", filename: "jacket.png", description: "Leather jacket folds/textures" },
-  { id: 4, title: "Yuuri", filename: "Yuuri.jpeg", description: "From 'Girls last tour' my fav character, yuuri. :)" },
+  { id: 1, title: "Yuuri", filename: "Yuuri.jpeg", description: "From 'Girls last tour' my fav character, yuuri. :)" },
 ]
 
 // Modal component for zoom + pan
