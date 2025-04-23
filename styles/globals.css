@@ -92,3 +92,6 @@ body {
     @apply bg-background text-foreground;
   }
 }
+/* Buttons and inputs */
+.btn { padding: .5rem 1rem; background: #22c55e; color: white; border-radius: .25rem; }
+.input { display: block; margin-bottom: .5rem; padding: .5rem; border: 1px solid #4b5563; border-radius: .25rem; width: 100%; }
