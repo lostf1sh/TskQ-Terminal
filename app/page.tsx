@@ -166,7 +166,7 @@ export default function Home() {
 
         {showArtwork && (
           <section id="artwork-section" className="mb-12">
-            <h2 className="font-mono text-green-400 text-lg mb-4">$ ls ~/artwork - I upscale all my drawings by 4x via "Topaz Photo AI" which gives it that characteristic look - If you have any questions regarding my work, feel free to drop a dm on discord~! ^-^</h2>
+            <h2 className="font-mono text-green-400 text-lg mb-4">$ ls ~/artwork - I upscale all my drawings by 4x via "Topaz Photo AI" which gives it a look that I find really cool - If you have any questions regarding my work, feel free to drop a dm on discord~! ^-^</h2>
             <div className="masonry">
               {artworkData.map(a => (
                 <div
