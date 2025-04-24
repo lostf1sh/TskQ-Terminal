@@ -11,6 +11,7 @@ const artworkData = [
   { id: 4, title: "Practice Hand", filename: "hand.png", description: "Referenced from Pinterest" },
   { id: 3, title: "Jacket Practice", filename: "jacket.png", description: "Leather jacket folds/textures" },
   { id: 1, title: "Yuuri", filename: "Yuuri.jpeg", description: "From 'Girls last tour' my fav character, yuuri. :)" },
+  { id: 5, title: "Eve shopping O-o", filename: "offscript.jpg", description: "Submission for off-script (F.A)" },
 ]
 
 // Modal component for zoom + pan
