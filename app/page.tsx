@@ -132,7 +132,7 @@ export default function Home() {
           onMouseEnter={() => setHoverEmoji(true)}
           onMouseLeave={() => setHoverEmoji(false)}
         >
-          {hoverEmoji ? "☆*: .｡. o(≧▽≦)o .｡.:*☆" : "(/≧▽≦)/"}
+          {hoverEmoji ? "(づ￣ 3￣)づ" : "(/≧▽≦)/"}
         </span>
       </div>
       <DiscordPresence userId="1002839537644482611" />
