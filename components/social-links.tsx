@@ -4,7 +4,8 @@ import {
   Github,
   Instagram,
   Youtube,
-  Music2
+  Music2,
+  twitter
 } from "lucide-react"
 
 export function SocialLinks() {
@@ -20,9 +21,9 @@ export function SocialLinks() {
       icon: <Instagram size={20} />,
     },
     {
-      name: "SoundCloud",
-      url: "https://soundcloud.com/floppydisc-825748608",
-      icon: <Music2 size={20} />,
+      name: "X/Twitter",
+      url: "https://x.com/TskDied",
+      icon: <twitter size={20} />,
     },
     {
       name: "YouTube",
