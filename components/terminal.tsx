@@ -242,7 +242,7 @@ export function Terminal({ showArtwork, setShowArtwork }: TerminalProps) {
                   rel="noopener noreferrer"
                   className="text-blue-400 hover:underline"
                 >
-                  github.com/yourusername
+                  github.com/tskq
                 </a>
               </p>
               <p className="pl-4 mb-1">
@@ -253,7 +253,7 @@ export function Terminal({ showArtwork, setShowArtwork }: TerminalProps) {
                   rel="noopener noreferrer"
                   className="text-blue-400 hover:underline"
                 >
-                  instagram.com/yourusername
+                  instagram.com/tskilca
                 </a>
               </p>
               <p className="pl-4 mb-1">
@@ -264,7 +264,7 @@ export function Terminal({ showArtwork, setShowArtwork }: TerminalProps) {
                   rel="noopener noreferrer"
                   className="text-blue-400 hover:underline"
                 >
-                  soundcloud.com/yourusername
+                  soundcloud.com/TskDied
                 </a>
               </p>
               <p className="pl-4 mb-1">
@@ -275,7 +275,7 @@ export function Terminal({ showArtwork, setShowArtwork }: TerminalProps) {
                   rel="noopener noreferrer"
                   className="text-blue-400 hover:underline"
                 >
-                  youtube.com/@yourchannel
+                  youtube.com/@tskku
                 </a>
               </p>
             </div>
