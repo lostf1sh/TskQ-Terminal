@@ -248,7 +248,7 @@ export function Terminal({ showArtwork, setShowArtwork }: TerminalProps) {
               <p className="pl-4 mb-1">
                 <span className="terminal-green">Instagram:</span>{" "}
                 <a
-                  href="https://instagram.com/tskilca"
+                  href="https://www.instagram.com/tskilca"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-400 hover:underline"
@@ -257,9 +257,9 @@ export function Terminal({ showArtwork, setShowArtwork }: TerminalProps) {
                 </a>
               </p>
               <p className="pl-4 mb-1">
-                <span className="terminal-green">SoundCloud:</span>{" "}
+                <span className="terminal-green">X/Twitter:</span>{" "}
                 <a
-                  href="https://soundcloud.com/floppydisc-825748608"
+                  href="https://x.com/TskDied"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-400 hover:underline"
