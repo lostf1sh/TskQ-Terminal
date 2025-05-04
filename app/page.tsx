@@ -12,6 +12,7 @@ const artworkData = [
   { id: 3, title: "Jacket Practice", filename: "jacket.png", description: "Leather jacket folds/textures" },
   { id: 1, title: "Yuuri", filename: "Yuuri.jpeg", description: "From 'Girls last tour' my fav character, yuuri. :)" },
   { id: 5, title: "Eve shopping O-o", filename: "offscript.jpg", description: "Submission for off-script (F.A)" },
+  { id: 6, title: "Frieren", filename: "Frieren.jpg", description: "M backkkk! Haven't drawn in a while:p" },
 ]
 
 // Modal component for zoom + pan
