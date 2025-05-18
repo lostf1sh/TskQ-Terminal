@@ -30,6 +30,11 @@ export function SocialLinks() {
       url: "https://youtube.com/@tskku",
       icon: <Youtube size={20} />,
     },
+    {
+      name: "TikTok",
+      url: "https://www.tiktok.com/@tskilca",
+      icon: <Music2 size={20} />,
+    },
   ]
 
   return (
