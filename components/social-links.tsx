@@ -21,19 +21,14 @@ export function SocialLinks() {
       icon: <Instagram size={20} />,
     },
     {
-      name: "X",
-      url: "https://x.com/TskDied",
-      icon: <Twitter size={20} />,
+      name: "TikTok",
+      url: "https://www.tiktok.com/@tskilca",
+      icon: <Music2 size={20} />,
     },
     {
       name: "YouTube",
       url: "https://youtube.com/@tskku",
       icon: <Youtube size={20} />,
-    },
-    {
-      name: "TikTok",
-      url: "https://www.tiktok.com/@tskilca",
-      icon: <Music2 size={20} />,
     },
   ]
 
