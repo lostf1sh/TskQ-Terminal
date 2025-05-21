@@ -13,6 +13,7 @@ const artworkData = [
   { id: 1, title: "Yuuri", filename: "Yuuri.jpeg", description: "From 'Girls last tour' my fav character, yuuri. :)" },
   { id: 5, title: "Eve shopping O-o", filename: "offscript.jpg", description: "Submission for off-script (F.A)" },
   { id: 6, title: "Frieren", filename: "Frieren.jpg", description: "M backkkk! Haven't drawn in a while:p" },
+  { id: 7, title: "Ryo", filename: "sip.png", description: "ryo yamada sips the coffee ☕" },
 ]
 
 // Modal component for zoom + pan
