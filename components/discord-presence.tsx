@@ -1,105 +1,150 @@
+// components/DiscordPresence.tsx
 "use client";
 
 import { useState, useEffect } from "react";
 
-interface DiscordUser { /* … */ }
-interface DiscordActivity { /* … */ }
-interface DiscordPresence { /* … */ }
-interface DiscordPresenceProps { userId: string }
+interface DiscordUser {
+  username: string;
+  avatar: string;
+  id: string;
+  discriminator: string;
+}
+
+interface DiscordActivity {
+  type: number;
+  name: string;
+  state?: string;
+  details?: string;
+  timestamps?: {
+    start?: number;
+    end?: number;
+  };
+  assets?: {
+    large_image?: string;
+    large_text?: string;
+    small_image?: string;
+    small_text?: string;
+  };
+}
+
+interface DiscordPresence {
+  discord_user: DiscordUser;
+  discord_status: "online" | "idle" | "dnd" | "offline";
+  activities: DiscordActivity[];
+  listening_to_spotify: boolean;
+  spotify?: {
+    song: string;
+    artist: string;
+    album_art_url: string;
+    timestamps: {
+      start: number;
+      end: number;
+    };
+  };
+}
+
+interface DiscordPresenceProps {
+  userId: string;
+}
 
 export function DiscordPresence({ userId }: DiscordPresenceProps) {
-  const [presenceData, setPresenceData] = useState<DiscordPresence | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [presenceData, setPresenceData] = useState<DiscordPresence | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPresenceData = async () => {
       try {
-        setLoading(true)
-        const response = await fetch(`https://api.lanyard.rest/v1/users/${userId}`)
-        if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`)
-        const data = await response.json()
-        if (!data.success) throw new Error("Lanyard API error")
-        setPresenceData(data.data)
-        setError(null)
+        setLoading(true);
+        const res = await fetch(`https://api.lanyard.rest/v1/users/${userId}`);
+        if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
+        const json = await res.json();
+        if (!json.success) throw new Error("API returned success=false");
+        setPresenceData(json.data);
+        setError(null);
       } catch (err) {
-        console.error(err)
-        setError(`Failed to load: ${err instanceof Error ? err.message : "Unknown error"}`)
+        console.error(err);
+        setError(`Failed to load Discord data: ${err instanceof Error ? err.message : "Unknown error"}`);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchPresenceData()
-    const interval = setInterval(fetchPresenceData, 30_000)
-    return () => clearInterval(interval)
-  }, [userId])
+    fetchPresenceData();
+    const interval = setInterval(fetchPresenceData, 30_000);
+    return () => clearInterval(interval);
+  }, [userId]);
 
   const formatElapsedTime = (start: number) => {
-    const diff = Date.now() - start
-    const m = Math.floor(diff / 60000)
-    const h = Math.floor(m / 60)
-    return h > 0 ? `${h}h ${m % 60}m` : `${m}m`
+    const now = Date.now();
+    const diff = now - start;
+    const mins = Math.floor(diff / 60000);
+    const hrs = Math.floor(mins / 60);
+    return hrs > 0 ? `${hrs}h ${mins % 60}m` : `${mins}m`;
+  };
+
+  if (loading) {
+    return (
+      <div className="text-right space-y-0.5">
+        <div className="terminal-green text-xs">$ fetching discord_status</div>
+        <div className="terminal-white text-xs">loading…</div>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="text-right space-y-0.5">
+        <div className="terminal-green text-xs">$ discord_status</div>
+        <div className="terminal-white text-xs">error: connection failed</div>
+      </div>
+    );
+  }
+  if (!presenceData) {
+    return (
+      <div className="text-right space-y-0.5">
+        <div className="terminal-green text-xs">$ discord_status</div>
+        <div className="terminal-white text-xs">no data available</div>
+      </div>
+    );
   }
 
-  if (loading)
-    return (
-      <div className="text-right transform scale-[3] origin-top-right">
-        <div className="terminal-green">$ fetching discord_status</div>
-        <div className="terminal-white">loading…</div>
-      </div>
-    )
-  if (error)
-    return (
-      <div className="text-right transform scale-[3] origin-top-right">
-        <div className="terminal-green">$ discord_status</div>
-        <div className="terminal-white">error: connection failed</div>
-      </div>
-    )
-  if (!presenceData)
-    return (
-      <div className="text-right transform scale-[3] origin-top-right">
-        <div className="terminal-green">$ discord_status</div>
-        <div className="terminal-white">no data available</div>
-      </div>
-    )
-
-  const { discord_user, discord_status, activities, listening_to_spotify, spotify } = presenceData
-  const mainActivity = activities?.find(a => a.type === 0 || a.type === 1)
+  const { discord_user, discord_status, activities, listening_to_spotify, spotify } = presenceData;
+  const mainActivity = activities.find(a => a.type === 0 || a.type === 1);
 
   return (
-    <div className="text-right transform scale-[3] origin-top-right">
-      <div className="terminal-green">$ discord_status</div>
-      <div className="flex items-center justify-end gap-2">
+    <div className="text-right space-y-1">
+      <div className="terminal-green text-xs">$ discord_status</div>
+
+      <div className="flex items-center justify-end space-x-2">
         {discord_user.avatar && (
           <img
-            src={`https://cdn.discordapp.com/avatars/${discord_user.id}/${discord_user.avatar}.png?size=128`}
+            src={`https://cdn.discordapp.com/avatars/${discord_user.id}/${discord_user.avatar}.png?size=64`}
             alt={discord_user.username}
-            className="w-24 h-24 rounded-full"
+            className="w-6 h-6 rounded-full"
           />
         )}
-        <div className="terminal-white text-3xl">
-          {discord_user.username} <span className="text-xl">[{discord_status}]</span>
+        <div className="terminal-white text-xs">
+          {discord_user.username} [{discord_status}]
         </div>
       </div>
 
       {mainActivity && (
-        <div className="mt-2">
-          <div className="terminal-orange text-2xl">
+        <>
+          <div className="terminal-orange text-xs">
             {mainActivity.name}
             {mainActivity.timestamps?.start && ` (${formatElapsedTime(mainActivity.timestamps.start)})`}
           </div>
-          {mainActivity.details && <div className="terminal-white text-xl">{mainActivity.details}</div>}
-          {mainActivity.state   && <div className="terminal-white text-xl">{mainActivity.state}</div>}
-        </div>
+          {mainActivity.details && <div className="terminal-white text-[10px]">{mainActivity.details}</div>}
+          {mainActivity.state   && <div className="terminal-white text-[10px]">{mainActivity.state}</div>}
+        </>
       )}
 
       {listening_to_spotify && spotify && (
-        <div className="mt-2">
-          <div className="terminal-orange text-2xl">spotify: {spotify.song}</div>
-          <div className="terminal-white text-xl">by {spotify.artist}</div>
-        </div>
+        <>
+          <div className="terminal-orange text-xs">spotify: {spotify.song}</div>
+          <div className="terminal-white text-[10px]">by {spotify.artist}</div>
+        </>
       )}
     </div>
-  )
+  );
 }
