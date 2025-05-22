@@ -1,9 +1,10 @@
-"use client"
+// app/page.tsx
+"use client";
 
-import { useState, useEffect, useRef, useCallback } from "react"
-import { DiscordPresence } from "@/components/discord-presence"
-import { Terminal } from "@/components/terminal"
-import { SocialLinks } from "@/components/social-links"
+import { useState, useEffect, useRef, useCallback } from "react";
+import { DiscordPresence } from "@/components/discord-presence";
+import { Terminal } from "@/components/terminal";
+import { SocialLinks } from "@/components/social-links";
 
 // Artwork metadata
 const artworkData = [
@@ -14,39 +15,38 @@ const artworkData = [
   { id: 5, title: "Eve shopping O-o", filename: "offscript.jpg", description: "Submission for off-script (F.A)" },
   { id: 6, title: "Frieren", filename: "Frieren.jpg", description: "M backkkk! Haven't drawn in a while:p" },
   { id: 7, title: "Ryo", filename: "sip.png", description: "ryo yamada sips the coffee ☕" },
-]
+];
 
 // Modal component for zoom + pan
 function ZoomableModal({ src, alt, onClose }: { src: string; alt: string; onClose: () => void }) {
-  const [zoom, setZoom] = useState(1)
-  const [offset, setOffset] = useState({ x: 0, y: 0 })
-  const dragging = useRef(false)
-  const lastPos = useRef({ x: 0, y: 0 })
+  const [zoom, setZoom] = useState(1);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const dragging = useRef(false);
+  const lastPos = useRef({ x: 0, y: 0 });
 
-  // Lock background scroll
   useEffect(() => {
-    document.body.style.overflow = "hidden"
-    return () => { document.body.style.overflow = "auto" }
-  }, [])
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = "auto"; };
+  }, []);
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
-    e.preventDefault()
-    const delta = -e.deltaY * 0.001
-    setZoom(z => Math.max(z + delta, 0.1))
-  }, [])
+    e.preventDefault();
+    const delta = -e.deltaY * 0.001;
+    setZoom(z => Math.max(z + delta, 0.1));
+  }, []);
 
   const startDrag = (e: React.MouseEvent) => {
-    dragging.current = true
-    lastPos.current = { x: e.clientX, y: e.clientY }
-  }
+    dragging.current = true;
+    lastPos.current = { x: e.clientX, y: e.clientY };
+  };
   const onDrag = (e: React.MouseEvent) => {
-    if (!dragging.current) return
-    const dx = e.clientX - lastPos.current.x
-    const dy = e.clientY - lastPos.current.y
-    setOffset(o => ({ x: o.x + dx, y: o.y + dy }))
-    lastPos.current = { x: e.clientX, y: e.clientY }
-  }
-  const endDrag = () => { dragging.current = false }
+    if (!dragging.current) return;
+    const dx = e.clientX - lastPos.current.x;
+    const dy = e.clientY - lastPos.current.y;
+    setOffset(o => ({ x: o.x + dx, y: o.y + dy }));
+    lastPos.current = { x: e.clientX, y: e.clientY };
+  };
+  const endDrag = () => { dragging.current = false; };
 
   return (
     <div
@@ -60,9 +60,8 @@ function ZoomableModal({ src, alt, onClose }: { src: string; alt: string; onClos
         onMouseDown={startDrag}
         onMouseMove={onDrag}
       >
-        {/* Close button */}
         <button
-          onClick={(e) => { e.stopPropagation(); onClose(); }}
+          onClick={e => { e.stopPropagation(); onClose(); }}
           className="absolute top-2 left-2 z-10 text-white bg-black bg-opacity-60 hover:bg-opacity-80 rounded p-1 font-bold"
         >
           ✕
@@ -83,51 +82,47 @@ function ZoomableModal({ src, alt, onClose }: { src: string; alt: string; onClos
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 // Main page
 export default function Home() {
-  const [showArtwork, setShowArtwork] = useState(true)
-  const [currentTime, setCurrentTime] = useState("")
-  const [hoverEmoji, setHoverEmoji] = useState(false)
-  const [scrollArrows, setScrollArrows] = useState({ down: true, up: false })
-  const [modal, setModal] = useState<{ src: string; alt: string } | null>(null)
+  const [showArtwork, setShowArtwork] = useState(true);
+  const [currentTime, setCurrentTime] = useState("");
+  const [hoverEmoji, setHoverEmoji] = useState(false);
+  const [scrollArrows, setScrollArrows] = useState({ down: true, up: false });
+  const [modal, setModal] = useState<{ src: string; alt: string } | null>(null);
 
-  // Always show vertical scrollbar to prevent layout shift
   useEffect(() => {
-    document.body.style.overflowY = 'scroll'
-    return () => { document.body.style.overflowY = '' }
-  }, [])
+    document.body.style.overflowY = 'scroll';
+    return () => { document.body.style.overflowY = ''; };
+  }, []);
 
-  // Clock
   useEffect(() => {
-    const tick = () => setCurrentTime(new Date().toLocaleTimeString())
-    tick()
-    const id = setInterval(tick, 1000)
-    return () => clearInterval(id)
-  }, [])
+    const tick = () => setCurrentTime(new Date().toLocaleTimeString());
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
 
-  // Scroll arrow visibility
   useEffect(() => {
     const onScroll = () => {
-      const y = window.scrollY
-      const artSection = document.getElementById("artwork-section")
-      const artTop = artSection?.offsetTop || Infinity
-      setScrollArrows({ down: y < 100 && showArtwork, up: y > artTop - 100 && showArtwork })
-    }
-    onScroll()
-    window.addEventListener("scroll", onScroll)
-    return () => window.removeEventListener("scroll", onScroll)
-  }, [showArtwork])
+      const y = window.scrollY;
+      const artTop = document.getElementById("artwork-section")?.offsetTop || Infinity;
+      setScrollArrows({ down: y < 100 && showArtwork, up: y > artTop - 100 && showArtwork });
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [showArtwork]);
 
-  const scrollToArtwork = () => window.scrollTo({ top: document.getElementById("artwork-section")?.offsetTop || 0, behavior: "smooth" })
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" })
-  const openImage = (src: string, alt: string) => setModal({ src, alt })
+  const scrollToArtwork = () => window.scrollTo({ top: document.getElementById("artwork-section")?.offsetTop || 0, behavior: "smooth" });
+  const scrollToTop     = () => window.scrollTo({ top: 0, behavior: "smooth" });
+  const openImage       = (src: string, alt: string) => setModal({ src, alt });
 
   return (
     <div className="min-h-screen flex flex-col bg-black text-white">
-      {/* Navbar / Presence */}
+      {/* Navbar emoji */}
       <div className="absolute top-6 left-6 z-50">
         <span
           className="font-mono text-green-400 text-5xl hover:text-green-200 transition-colors"
@@ -137,9 +132,12 @@ export default function Home() {
           {hoverEmoji ? "(づ￣ 3￣)づ" : "(/≧▽≦)/"}
         </span>
       </div>
-      <DiscordPresence userId="1002839537644482611" />
 
-      {/* Main content */}
+      {/* Discord presence top-right */}
+      <div className="absolute top-6 right-6 z-50">
+        <DiscordPresence userId="1002839537644482611" />
+      </div>
+
       <main className="flex-1 px-6 py-8">
         <section className="mb-12">
           <p className="font-mono text-green-300 mb-2">&gt; Interactive Terminal Interface</p>
@@ -158,7 +156,6 @@ export default function Home() {
           >
             {showArtwork ? "Hide Artwork" : "Show Artwork"}
           </button>
-          {/* Scroll down arrow */}
           <div
             className={`mt-4 text-green-500 text-5xl transition-opacity duration-500 ${scrollArrows.down ? "opacity-100" : "opacity-0"} pointer-events-${scrollArrows.down ? "auto" : "none"} animate-bounce glow cursor-pointer select-none`}
             onClick={scrollToArtwork}
@@ -169,7 +166,9 @@ export default function Home() {
 
         {showArtwork && (
           <section id="artwork-section" className="mb-12">
-            <h2 className="font-mono text-green-400 text-lg mb-4">$ ls ~/artwork - I upscale all my drawings by 4x via "Topaz Photo AI" which gives it a look that I find really cool - If you have any questions regarding my work, feel free to drop a dm on discord~! ^-^</h2>
+            <h2 className="font-mono text-green-400 text-lg mb-4">
+              $ ls ~/artwork - I upscale all my drawings by 4x via "Topaz Photo AI" which gives it a look that I find really cool - If you have any questions regarding my work, feel free to drop a dm on discord~! ^-^
+            </h2>
             <div className="masonry">
               {artworkData.map(a => (
                 <div
@@ -177,7 +176,8 @@ export default function Home() {
                   className="masonry-item border border-gray-800 p-4 hover:border-green-500 transition-colors rounded bg-black"
                 >
                   <img
-                    src={`/${a.filename}`} alt={a.title}
+                    src={`/${a.filename}`}
+                    alt={a.title}
                     className="w-full h-auto object-cover rounded shadow-lg mb-2 cursor-zoom-in"
                     onClick={() => openImage(`/${a.filename}`, a.title)}
                   />
@@ -190,7 +190,6 @@ export default function Home() {
         )}
       </main>
 
-      {/* Back to top arrow */}
       <div
         className={`fixed bottom-6 left-1/2 -translate-x-1/2 bg-black bg-opacity-50 rounded px-4 py-2 text-green-500 text-4xl transition-opacity duration-500 ${scrollArrows.up ? "opacity-100" : "opacity-0"} pointer-events-${scrollArrows.up ? "auto" : "none"} cursor-pointer glow`}
         onClick={scrollToTop}
@@ -198,13 +197,11 @@ export default function Home() {
         ↑
       </div>
 
-      {/* Footer */}
       <footer className="text-center py-4 font-mono text-gray-500">
         © {new Date().getFullYear()} – TskQ
         <div className="mt-1">system time: {currentTime}</div>
       </footer>
 
-      {/* Modal */}
       {modal && (
         <ZoomableModal
           src={modal.src}
@@ -213,5 +210,5 @@ export default function Home() {
         />
       )}
     </div>
-  )
+  );
 }
