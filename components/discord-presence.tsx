@@ -1,150 +1,166 @@
-// components/DiscordPresence.tsx
-"use client";
-
-import { useState, useEffect } from "react";
+import { useState, useEffect } from "react"
 
 interface DiscordUser {
-  username: string;
-  avatar: string;
-  id: string;
-  discriminator: string;
+  username: string
+  avatar: string
+  id: string
+  discriminator: string
 }
 
 interface DiscordActivity {
-  type: number;
-  name: string;
-  state?: string;
-  details?: string;
+  type: number
+  name: string
+  state?: string
+  details?: string
   timestamps?: {
-    start?: number;
-    end?: number;
-  };
+    start?: number
+    end?: number
+  }
   assets?: {
-    large_image?: string;
-    large_text?: string;
-    small_image?: string;
-    small_text?: string;
-  };
+    large_image?: string
+    large_text?: string
+    small_image?: string
+    small_text?: string
+  }
 }
 
 interface DiscordPresence {
-  discord_user: DiscordUser;
-  discord_status: "online" | "idle" | "dnd" | "offline";
-  activities: DiscordActivity[];
-  listening_to_spotify: boolean;
+  discord_user: DiscordUser
+  discord_status: "online" | "idle" | "dnd" | "offline"
+  activities: DiscordActivity[]
+  listening_to_spotify: boolean
   spotify?: {
-    song: string;
-    artist: string;
-    album_art_url: string;
+    song: string
+    artist: string
+    album_art_url: string
     timestamps: {
-      start: number;
-      end: number;
-    };
-  };
+      start: number
+      end: number
+    }
+  }
 }
 
 interface DiscordPresenceProps {
-  userId: string;
+  userId: string
 }
 
 export function DiscordPresence({ userId }: DiscordPresenceProps) {
-  const [presenceData, setPresenceData] = useState<DiscordPresence | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [presenceData, setPresenceData] = useState<DiscordPresence | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchPresenceData = async () => {
       try {
-        setLoading(true);
-        const res = await fetch(`https://api.lanyard.rest/v1/users/${userId}`);
-        if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
-        const json = await res.json();
-        if (!json.success) throw new Error("API returned success=false");
-        setPresenceData(json.data);
-        setError(null);
+        setLoading(true)
+        const response = await fetch(https://api.lanyard.rest/v1/users/${userId})
+
+        if (!response.ok) {
+          throw new Error(API returned ${response.status}: ${response.statusText})
+        }
+
+        const data = await response.json()
+
+        if (!data.success) {
+          throw new Error("API request was not successful")
+        }
+
+        setPresenceData(data.data)
+        setError(null)
       } catch (err) {
-        console.error(err);
-        setError(`Failed to load Discord data: ${err instanceof Error ? err.message : "Unknown error"}`);
+        console.error("Error fetching Discord presence:", err)
+        setError(Failed to load Discord data: ${err instanceof Error ? err.message : "Unknown error"})
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    fetchPresenceData();
-    const interval = setInterval(fetchPresenceData, 30_000);
-    return () => clearInterval(interval);
-  }, [userId]);
+    fetchPresenceData()
 
-  const formatElapsedTime = (start: number) => {
-    const now = Date.now();
-    const diff = now - start;
-    const mins = Math.floor(diff / 60000);
-    const hrs = Math.floor(mins / 60);
-    return hrs > 0 ? `${hrs}h ${mins % 60}m` : `${mins}m`;
-  };
+    // Set up polling every 30 seconds
+    const interval = setInterval(fetchPresenceData, 30000)
+
+    return () => clearInterval(interval)
+  }, [userId])
+
+  // Format elapsed time
+  const formatElapsedTime = (startTime: number) => {
+    const now = Date.now()
+    const elapsed = now - startTime
+    const minutes = Math.floor(elapsed / 60000)
+    const hours = Math.floor(minutes / 60)
+
+    if (hours > 0) {
+      return ${hours}h ${minutes % 60}m
+    }
+    return ${minutes}m
+  }
 
   if (loading) {
     return (
-      <div className="text-right space-y-0.5">
-        <div className="terminal-green text-xs">$ fetching discord_status</div>
-        <div className="terminal-white text-xs">loading…</div>
+      <div className="text-right">
+        <div className="terminal-green">$ fetching discord_status</div>
+        <div className="terminal-white">loading...</div>
       </div>
-    );
+    )
   }
+
   if (error) {
     return (
-      <div className="text-right space-y-0.5">
-        <div className="terminal-green text-xs">$ discord_status</div>
-        <div className="terminal-white text-xs">error: connection failed</div>
+      <div className="text-right">
+        <div className="terminal-green">$ discord_status</div>
+        <div className="terminal-white">error: connection failed</div>
       </div>
-    );
+    )
   }
+
   if (!presenceData) {
     return (
-      <div className="text-right space-y-0.5">
-        <div className="terminal-green text-xs">$ discord_status</div>
-        <div className="terminal-white text-xs">no data available</div>
+      <div className="text-right">
+        <div className="terminal-green">$ discord_status</div>
+        <div className="terminal-white">no data available</div>
       </div>
-    );
+    )
   }
 
-  const { discord_user, discord_status, activities, listening_to_spotify, spotify } = presenceData;
-  const mainActivity = activities.find(a => a.type === 0 || a.type === 1);
+  const { discord_user, discord_status, activities } = presenceData
+
+  // Get the first non-Spotify activity (if any)
+  const mainActivity = activities?.find((activity) => activity.type === 0 || activity.type === 1)
 
   return (
-    <div className="text-right space-y-1">
-      <div className="terminal-green text-xs">$ discord_status</div>
-
-      <div className="flex items-center justify-end space-x-2">
+    <div className="text-right">
+      <div className="terminal-green">$ discord_status</div>
+      <div className="flex items-center justify-end gap-2">
         {discord_user.avatar && (
           <img
-            src={`https://cdn.discordapp.com/avatars/${discord_user.id}/${discord_user.avatar}.png?size=64`}
+            src={https://cdn.discordapp.com/avatars/${discord_user.id}/${discord_user.avatar}.png?size=32}
             alt={discord_user.username}
-            className="w-6 h-6 rounded-full"
+            className="w-8 h-8 rounded-full"
           />
         )}
-        <div className="terminal-white text-xs">
+        <div className="terminal-white">
           {discord_user.username} [{discord_status}]
         </div>
       </div>
 
       {mainActivity && (
-        <>
-          <div className="terminal-orange text-xs">
+        <div className="mt-1">
+          <div className="terminal-orange">
             {mainActivity.name}
-            {mainActivity.timestamps?.start && ` (${formatElapsedTime(mainActivity.timestamps.start)})`}
+            {mainActivity.timestamps?.start &&  (${formatElapsedTime(mainActivity.timestamps.start)})}
           </div>
-          {mainActivity.details && <div className="terminal-white text-[10px]">{mainActivity.details}</div>}
-          {mainActivity.state   && <div className="terminal-white text-[10px]">{mainActivity.state}</div>}
-        </>
+          {mainActivity.details && <div className="terminal-white text-xs">{mainActivity.details}</div>}
+          {mainActivity.state && <div className="terminal-white text-xs">{mainActivity.state}</div>}
+        </div>
       )}
 
-      {listening_to_spotify && spotify && (
-        <>
-          <div className="terminal-orange text-xs">spotify: {spotify.song}</div>
-          <div className="terminal-white text-[10px]">by {spotify.artist}</div>
-        </>
+      {presenceData.listening_to_spotify && presenceData.spotify && (
+        <div className="mt-1">
+          <div className="terminal-orange">spotify: {presenceData.spotify.song}</div>
+          <div className="terminal-white text-xs">by {presenceData.spotify.artist}</div>
+        </div>
       )}
     </div>
-  );
+  )
 }
