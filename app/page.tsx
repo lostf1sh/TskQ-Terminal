@@ -14,6 +14,7 @@ const artworkData = [
   { id: 5, title: "Eve shopping O-o", filename: "offscript.jpg", description: "Submission for off-script (F.A)" },
   { id: 6, title: "Frieren", filename: "Frieren.jpg", description: "M backkkk! Haven't drawn in a while:p" },
   { id: 7, title: "Ryo", filename: "sip.png", description: "ryo yamada sips the coffee ☕" },
+  { id: 8, title: "More Kiyosumi", filename: "just-as-you-are.jpg", description: "New album, new fan-art. Also because kiyosumi herself said that there MIGHT be a reward :>" },
 ]
 
 // Modal component for zoom + pan
