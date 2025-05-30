@@ -12,7 +12,7 @@ interface DiscordUser {
 interface DiscordActivity {
   type: number
   name: string
-  state?: string
+  state?: string            // custom‐status text or activity “state”
   details?: string
   timestamps?: {
     start?: number
@@ -55,84 +55,71 @@ export function DiscordPresence({ userId }: DiscordPresenceProps) {
     const fetchPresenceData = async () => {
       try {
         setLoading(true)
-        const response = await fetch(`https://api.lanyard.rest/v1/users/${userId}`)
-
-        if (!response.ok) {
-          throw new Error(`API returned ${response.status}: ${response.statusText}`)
-        }
-
-        const data = await response.json()
-
-        if (!data.success) {
-          throw new Error("API request was not successful")
-        }
-
-        setPresenceData(data.data)
+        const res = await fetch(`https://api.lanyard.rest/v1/users/${userId}`)
+        if (!res.ok) throw new Error(`API returned ${res.status}`)
+        const json = await res.json()
+        if (!json.success) throw new Error("Lanyard said failed")
+        setPresenceData(json.data)
         setError(null)
       } catch (err) {
-        console.error("Error fetching Discord presence:", err)
-        setError(`Failed to load Discord data: ${err instanceof Error ? err.message : "Unknown error"}`)
+        console.error(err)
+        setError((err as Error).message)
       } finally {
         setLoading(false)
       }
     }
 
     fetchPresenceData()
-
-    // Set up polling every 30 seconds
-    const interval = setInterval(fetchPresenceData, 30000)
-
-    return () => clearInterval(interval)
+    const iv = setInterval(fetchPresenceData, 30_000)
+    return () => clearInterval(iv)
   }, [userId])
 
-  // Format elapsed time
-  const formatElapsedTime = (startTime: number) => {
-    const now = Date.now()
-    const elapsed = now - startTime
-    const minutes = Math.floor(elapsed / 60000)
-    const hours = Math.floor(minutes / 60)
-
-    if (hours > 0) {
-      return `${hours}h ${minutes % 60}m`
-    }
-    return `${minutes}m`
+  // helper for “Listening since”
+  const formatElapsed = (start: number) => {
+    const diff = Date.now() - start
+    const mins = Math.floor(diff / 60_000)
+    const hrs = Math.floor(mins / 60)
+    return hrs > 0 ? `${hrs}h ${mins % 60}m` : `${mins}m`
   }
 
-  if (loading) {
-    return (
-      <div className="text-right">
-        <div className="terminal-green">$ fetching discord_status</div>
-        <div className="terminal-white">loading...</div>
-      </div>
-    )
-  }
+  if (loading) return (
+    <div className="text-right">
+      <div className="terminal-green">$ fetching discord_status</div>
+      <div className="terminal-white">loading...</div>
+    </div>
+  )
+  if (error) return (
+    <div className="text-right">
+      <div className="terminal-green">$ discord_status</div>
+      <div className="terminal-white">error: {error}</div>
+    </div>
+  )
+  if (!presenceData) return null
 
-  if (error) {
-    return (
-      <div className="text-right">
-        <div className="terminal-green">$ discord_status</div>
-        <div className="terminal-white">error: connection failed</div>
-      </div>
-    )
-  }
+  const {
+    discord_user,
+    discord_status,
+    activities,
+    listening_to_spotify,
+    spotify,
+  } = presenceData
 
-  if (!presenceData) {
-    return (
-      <div className="text-right">
-        <div className="terminal-green">$ discord_status</div>
-        <div className="terminal-white">no data available</div>
-      </div>
-    )
-  }
+  // pick out custom status (type 4), game (0) or competing (1)
+  const customStatus = activities.find(a => a.type === 4 && a.state)
+  const mainActivity = activities.find(a => a.type === 0 || a.type === 1)
 
-  const { discord_user, discord_status, activities } = presenceData
-
-  // Get the first non-Spotify activity (if any)
-  const mainActivity = activities?.find((activity) => activity.type === 0 || activity.type === 1)
+  // map presence to coloured dot
+  const statusColor = {
+    online: "bg-green-500",
+    idle:   "bg-yellow-500",
+    dnd:    "bg-red-500",
+    offline:"bg-gray-500",
+  }[discord_status]
 
   return (
     <div className="text-right">
       <div className="terminal-green">$ discord_status</div>
+
       <div className="flex items-center justify-end gap-2">
         {discord_user.avatar && (
           <img
@@ -141,26 +128,49 @@ export function DiscordPresence({ userId }: DiscordPresenceProps) {
             className="w-8 h-8 rounded-full"
           />
         )}
-        <div className="terminal-white">
-          {discord_user.username} [{discord_status}]
+        <div className="flex items-center gap-1">
+          <span className={`inline-block w-2 h-2 rounded-full ${statusColor}`} />
+          <span className="terminal-white">
+            {discord_user.username}
+          </span>
         </div>
       </div>
 
+      {/* Custom Status message */}
+      {customStatus && (
+        <div className="mt-1 flex items-center justify-end gap-1">
+          {customStatus.assets?.small_image && (
+            <img
+              src={`https://cdn.discordapp.com/app-assets/${customStatus.id}/${customStatus.assets.small_image}.png`}
+              alt={customStatus.assets.small_text}
+              className="w-4 h-4"
+            />
+          )}
+          <span className="terminal-magenta text-xs">
+            {customStatus.state}
+          </span>
+        </div>
+      )}
+
+      {/* Main Activity (game, stream, etc) */}
       {mainActivity && (
         <div className="mt-1">
           <div className="terminal-orange">
             {mainActivity.name}
-            {mainActivity.timestamps?.start && ` (${formatElapsedTime(mainActivity.timestamps.start)})`}
+            {mainActivity.timestamps?.start && (
+              <> ({formatElapsed(mainActivity.timestamps.start)})</>
+            )}
           </div>
-          {mainActivity.details && <div className="terminal-white text-xs">{mainActivity.details}</div>}
-          {mainActivity.state && <div className="terminal-white text-xs">{mainActivity.state}</div>}
+          {mainActivity.details  && <div className="terminal-white text-xs">{mainActivity.details}</div>}
+          {mainActivity.state    && <div className="terminal-white text-xs">{mainActivity.state}</div>}
         </div>
       )}
 
-      {presenceData.listening_to_spotify && presenceData.spotify && (
+      {/* Spotify */}
+      {listening_to_spotify && spotify && (
         <div className="mt-1">
-          <div className="terminal-orange">spotify: {presenceData.spotify.song}</div>
-          <div className="terminal-white text-xs">by {presenceData.spotify.artist}</div>
+          <div className="terminal-orange">spotify: {spotify.song}</div>
+          <div className="terminal-white text-xs">by {spotify.artist}</div>
         </div>
       )}
     </div>
