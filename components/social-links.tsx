@@ -1,12 +1,11 @@
 "use client"
 
 import {
-  Github,
   Instagram,
   Youtube,
   Music2,
   Twitter,
-  camera
+  Camera
 } from "lucide-react"
 
 export function SocialLinks() {
@@ -14,7 +13,7 @@ export function SocialLinks() {
     {
       name: "Bsky",
       url: "https://bsky.app/profile/tskq.bsky.social",
-      icon: <camera size={20} />,
+      icon: <Camera size={20} />,
     },
     {
       name: "Instagram",
