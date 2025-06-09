@@ -5,15 +5,16 @@ import {
   Instagram,
   Youtube,
   Music2,
-  Twitter
+  Twitter,
+  camera
 } from "lucide-react"
 
 export function SocialLinks() {
   const socialLinks = [
     {
-      name: "GitHub",
-      url: "https://github.com/tskq",
-      icon: <Github size={20} />,
+      name: "Bsky",
+      url: "https://bsky.app/profile/tskq.bsky.social",
+      icon: <camera size={20} />,
     },
     {
       name: "Instagram",
