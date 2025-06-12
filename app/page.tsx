@@ -65,6 +65,13 @@ const initialArtworkData: Artwork[] = [
     description:
       "only because kiyo herself said that there might be a reward :>",
   },
+  {
+    id: 9,
+    title: "Colors... !",
+    filename: "nande.png",
+    description:
+      "First drawing after finals, yes I used colors. You're not hallucinating.",
+  },
 ];
 
 // Modal component for zoom + pan
