@@ -33,7 +33,7 @@
   --ctp-surface2: 88 91 112;
   --ctp-surface1: 69 71 90;
   --ctp-surface0: 49 50 68;
-  --ctp-base: 30 30 46;
+  --ctp-base: 15 15 25;
   --ctp-mantle: 24 24 37;
   --ctp-crust: 17 17 27;
 
@@ -572,13 +572,13 @@ body {
   border: 1px solid rgb(var(--success) / 0.3);
 }
 
-.connection-status.disconnected {
+.connection-status.error {
   background: rgb(var(--destructive) / 0.1);
   color: rgb(var(--destructive));
   border: 1px solid rgb(var(--destructive) / 0.3);
 }
 
-.connection-status.connecting {
+.connection-status.loading {
   background: rgb(var(--warning) / 0.1);
   color: rgb(var(--warning));
   border: 1px solid rgb(var(--warning) / 0.3);

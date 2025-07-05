@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 
 interface DiscordUser {
   username: string
@@ -47,129 +47,44 @@ interface DiscordPresenceProps {
   onAdminUpload?: () => void
 }
 
-type ConnectionStatus = 'connecting' | 'connected' | 'disconnected' | 'error'
+type ConnectionStatus = 'loading' | 'connected' | 'error'
 
 export function DiscordPresence({ userId, onAdminUpload }: DiscordPresenceProps) {
   const [presenceData, setPresenceData] = useState<DiscordPresence | null>(null)
-  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('connecting')
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('loading')
   const [showLogin, setShowLogin] = useState(false)
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [isAdmin, setIsAdmin] = useState(false)
-  const [retryCount, setRetryCount] = useState(0)
-  const wsRef = useRef<WebSocket | null>(null)
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  // WebSocket connection with Lanyard
+  // HTTP polling for Discord presence
   useEffect(() => {
-    const connectWebSocket = () => {
+    const fetchPresence = async () => {
       try {
-        setConnectionStatus('connecting')
-        const ws = new WebSocket('wss://api.lanyard.rest/socket')
-        wsRef.current = ws
-
-        ws.onopen = () => {
-          console.log('WebSocket connected to Lanyard')
+        setConnectionStatus('loading')
+        const res = await fetch(`https://api.lanyard.rest/v1/users/${userId}`)
+        if (!res.ok) throw new Error(`API returned ${res.status}`)
+        const json = await res.json()
+        if (json.success) {
+          setPresenceData(json.data)
           setConnectionStatus('connected')
-          setRetryCount(0)
-          
-          // Subscribe to user presence
-          ws.send(JSON.stringify({
-            op: 2,
-            d: {
-              subscribe_to_id: userId
-            }
-          }))
-        }
-
-        ws.onmessage = (event) => {
-          try {
-            const data = JSON.parse(event.data)
-            
-            if (data.op === 0) { // Event
-              if (data.t === 'INIT_STATE' || data.t === 'PRESENCE_UPDATE') {
-                setPresenceData(data.d)
-              }
-            } else if (data.op === 1) { // Hello
-              // Send heartbeat
-              const heartbeatInterval = setInterval(() => {
-                if (ws.readyState === WebSocket.OPEN) {
-                  ws.send(JSON.stringify({ op: 3 }))
-                }
-              }, data.d.heartbeat_interval)
-
-              // Clean up interval when connection closes
-              ws.onclose = () => {
-                clearInterval(heartbeatInterval)
-              }
-            }
-          } catch (error) {
-            console.error('Error parsing WebSocket message:', error)
-          }
-        }
-
-        ws.onerror = (error) => {
-          console.error('WebSocket error:', error)
-          setConnectionStatus('error')
-        }
-
-        ws.onclose = (event) => {
-          console.log('WebSocket disconnected:', event.code, event.reason)
-          setConnectionStatus('disconnected')
-          
-          // Attempt to reconnect with exponential backoff
-          if (retryCount < 5) {
-            const delay = Math.min(1000 * Math.pow(2, retryCount), 30000)
-            console.log(`Reconnecting in ${delay}ms...`)
-            
-            reconnectTimeoutRef.current = setTimeout(() => {
-              setRetryCount(prev => prev + 1)
-              connectWebSocket()
-            }, delay)
-          }
+        } else {
+          throw new Error('API returned unsuccessful response')
         }
       } catch (error) {
-        console.error('Failed to create WebSocket connection:', error)
+        console.error('Failed to fetch Discord presence:', error)
         setConnectionStatus('error')
       }
     }
 
-    connectWebSocket()
+    // Initial fetch
+    fetchPresence()
 
-    // Cleanup function
-    return () => {
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current)
-      }
-      if (wsRef.current) {
-        wsRef.current.close()
-      }
-    }
-  }, [userId, retryCount])
+    // Set up polling every 30 seconds
+    const interval = setInterval(fetchPresence, 30000)
 
-  // Fallback HTTP polling if WebSocket fails
-  useEffect(() => {
-    if (connectionStatus === 'error' || connectionStatus === 'disconnected') {
-      const fallbackFetch = async () => {
-        try {
-          const res = await fetch(`https://api.lanyard.rest/v1/users/${userId}`)
-          if (!res.ok) throw new Error(`API returned ${res.status}`)
-          const json = await res.json()
-          if (json.success) {
-            setPresenceData(json.data)
-            setConnectionStatus('connected')
-          }
-        } catch (error) {
-          console.error('Fallback fetch failed:', error)
-        }
-      }
-
-      const interval = setInterval(fallbackFetch, 30000)
-      fallbackFetch() // Initial fetch
-
-      return () => clearInterval(interval)
-    }
-  }, [userId, connectionStatus])
+    return () => clearInterval(interval)
+  }, [userId])
 
   const handleStatusClick = (e: React.MouseEvent) => {
     if (e.detail === 3) {
@@ -202,15 +117,14 @@ export function DiscordPresence({ userId, onAdminUpload }: DiscordPresenceProps)
 
   const getConnectionStatusText = () => {
     switch (connectionStatus) {
-      case 'connecting': return 'Connecting...'
-      case 'connected': return 'Live'
-      case 'disconnected': return 'Reconnecting...'
+      case 'loading': return 'Loading...'
+      case 'connected': return 'Connected'
       case 'error': return 'Offline'
       default: return 'Unknown'
     }
   }
 
-  if (connectionStatus === 'connecting' && !presenceData) {
+  if (connectionStatus === 'loading' && !presenceData) {
     return (
       <div className="discord-presence animate-fade-in">
         <div className="flex items-center gap-3 mb-3">
@@ -222,7 +136,7 @@ export function DiscordPresence({ userId, onAdminUpload }: DiscordPresenceProps)
         </div>
         <div className="text-xs text-muted-foreground flex items-center gap-2">
           <i className="fas fa-circle-notch fa-spin"></i>
-          Connecting to Discord...
+          Loading Discord status...
         </div>
       </div>
     )
@@ -276,9 +190,8 @@ export function DiscordPresence({ userId, onAdminUpload }: DiscordPresenceProps)
       {/* Connection status indicator */}
       <div className={`connection-status ${connectionStatus}`}>
         <i className={`fas ${
-          connectionStatus === 'connected' ? 'fa-wifi' :
-          connectionStatus === 'connecting' ? 'fa-circle-notch fa-spin' :
-          connectionStatus === 'disconnected' ? 'fa-wifi' :
+          connectionStatus === 'connected' ? 'fa-check-circle' :
+          connectionStatus === 'loading' ? 'fa-circle-notch fa-spin' :
           'fa-exclamation-triangle'
         } mr-2`}></i>
         {getConnectionStatusText()}
@@ -366,12 +279,6 @@ export function DiscordPresence({ userId, onAdminUpload }: DiscordPresenceProps)
               )}
             </div>
           )}
-
-          {/* Footer info */}
-          <div className="text-xs text-muted-foreground mt-3 pt-3 border-t border-border">
-            <i className="fas fa-info-circle mr-1"></i>
-            Real-time via Lanyard API
-          </div>
         </div>
 
         {showLogin && (
