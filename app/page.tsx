@@ -137,7 +137,7 @@ function ZoomableModal({
           }}
           className="absolute top-4 left-4 z-10 modern-button-secondary"
         >
-          ✕
+          <i className="fas fa-times"></i>
         </button>
         <img
           src={src}
@@ -153,7 +153,8 @@ function ZoomableModal({
           className="absolute bottom-4 left-1/2 transform -translate-x-1/2 modern-card text-sm px-4 py-2"
           onClick={(e) => e.stopPropagation()}
         >
-          Scroll to zoom in/out
+          <i className="fas fa-mouse-pointer mr-2"></i>
+          Scroll to zoom • Drag to pan
         </div>
       </div>
     </div>
@@ -182,10 +183,16 @@ function UploadArtworkModal({
   return (
     <div className="modal-overlay">
       <div className="modal-content p-6 w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-6">Upload Artwork</h2>
+        <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
+          <i className="fas fa-upload text-primary"></i>
+          Upload Artwork
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="form-group">
-            <label className="form-label">Title</label>
+            <label className="form-label">
+              <i className="fas fa-heading mr-2"></i>
+              Title
+            </label>
             <input
               className="modern-input"
               placeholder="Enter artwork title"
@@ -195,7 +202,10 @@ function UploadArtworkModal({
             />
           </div>
           <div className="form-group">
-            <label className="form-label">Description</label>
+            <label className="form-label">
+              <i className="fas fa-align-left mr-2"></i>
+              Description
+            </label>
             <input
               className="modern-input"
               placeholder="Enter description"
@@ -205,7 +215,10 @@ function UploadArtworkModal({
             />
           </div>
           <div className="form-group">
-            <label className="form-label">Image File</label>
+            <label className="form-label">
+              <i className="fas fa-image mr-2"></i>
+              Image File
+            </label>
             <input
               type="file"
               accept="image/*"
@@ -220,12 +233,14 @@ function UploadArtworkModal({
               onClick={onClose}
               className="modern-button-secondary"
             >
+              <i className="fas fa-times mr-2"></i>
               Cancel
             </button>
             <button
               type="submit"
               className="modern-button"
             >
+              <i className="fas fa-upload mr-2"></i>
               Upload
             </button>
           </div>
@@ -237,10 +252,9 @@ function UploadArtworkModal({
 
 // Main page
 export default function Home() {
-  const [showArtwork, setShowArtwork] = useState(true);
   const [currentTime, setCurrentTime] = useState("");
   const [hoverEmoji, setHoverEmoji] = useState(false);
-  const [scrollArrows, setScrollArrows] = useState({ down: true, up: false });
+  const [scrollProgress, setScrollProgress] = useState(0);
   const [modal, setModal] = useState<{ src: string; alt: string } | null>(null);
   const [artworkData, setArtworkData] = useState<Artwork[]>(initialArtworkData);
   const [showUploadForm, setShowUploadForm] = useState(false);
@@ -263,21 +277,18 @@ export default function Home() {
     return () => clearInterval(id);
   }, []);
 
-  // Scroll arrow visibility
+  // Scroll progress
   useEffect(() => {
-    const onScroll = () => {
-      const y = window.scrollY;
-      const artSection = document.getElementById("artwork-section");
-      const artTop = artSection?.offsetTop || Infinity;
-      setScrollArrows({
-        down: y < 100 && showArtwork,
-        up: y > artTop - 100 && showArtwork,
-      });
+    const updateScrollProgress = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = (scrollTop / docHeight) * 100;
+      setScrollProgress(progress);
     };
-    onScroll();
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [showArtwork]);
+
+    window.addEventListener("scroll", updateScrollProgress);
+    return () => window.removeEventListener("scroll", updateScrollProgress);
+  }, []);
 
   const scrollToArtwork = () =>
     window.scrollTo({
@@ -300,8 +311,14 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background text-foreground animate-fade-in">
+      {/* Scroll progress indicator */}
+      <div 
+        className="scroll-indicator" 
+        style={{ width: `${scrollProgress}%` }}
+      />
+
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-sm border-b border-border">
+      <header className="sticky top-0 z-40 header-blur">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <span
@@ -316,17 +333,19 @@ export default function Home() {
               <p className="text-sm text-muted-foreground">Digital Artist & Developer</p>
             </div>
           </div>
-          <DiscordPresence
-            userId="1002839537644482611"
-            onAdminUpload={() => setShowUploadForm(true)}
-          />
+          <div className="text-right">
+            <div className="text-sm text-muted-foreground">
+              <i className="fas fa-clock mr-2"></i>
+              {currentTime}
+            </div>
+          </div>
         </div>
       </header>
 
       {/* Main content */}
       <main className="max-w-7xl mx-auto px-6 py-12 space-y-16">
         {/* Welcome Section */}
-        <section className="text-center space-y-6 animate-slide-in">
+        <section className="text-center space-y-8 animate-slide-in">
           <h2 className="text-4xl font-bold text-gradient">Welcome to my creative space</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             I'm a digital artist and developer passionate about creating immersive experiences.
@@ -334,82 +353,87 @@ export default function Home() {
           </p>
         </section>
 
+        {/* Discord Presence Section */}
+        <section className="flex justify-center animate-fade-in" style={{ animationDelay: '0.1s' }}>
+          <DiscordPresence
+            userId="1002839537644482611"
+            onAdminUpload={() => setShowUploadForm(true)}
+          />
+        </section>
+
         {/* Social Links Section */}
-        <section className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
-          <h3 className="text-2xl font-semibold text-center mb-8">Connect with me</h3>
+        <section className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <h3 className="text-2xl font-semibold text-center mb-8 flex items-center justify-center gap-2">
+            <i className="fas fa-share-alt text-primary"></i>
+            Connect with me
+          </h3>
           <SocialLinks />
         </section>
 
-        {/* Artwork Toggle */}
-        <section className="text-center animate-fade-in" style={{ animationDelay: '0.2s' }}>
-          <button
-            onClick={() => setShowArtwork((v) => !v)}
-            className="modern-button"
-          >
-            {showArtwork ? "Hide Artwork" : "Show Artwork"}
-          </button>
-          
-          {/* Scroll down indicator */}
-          {showArtwork && scrollArrows.down && (
-            <div
-              className="mt-8 text-primary text-4xl cursor-pointer select-none transition-all duration-300 hover:transform hover:scale-110 animate-bounce"
-              onClick={scrollToArtwork}
-            >
-              ↓
-            </div>
-          )}
-        </section>
-
         {/* Artwork Gallery */}
-        {showArtwork && (
-          <section id="artwork-section" className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            <div className="text-center mb-12">
-              <h3 className="text-3xl font-bold mb-4">My Artwork</h3>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
-                Hope you enjoy my art, dear visitor! If you have any questions regarding my work, 
-                feel free to drop a dm on discord~ ^-^
-              </p>
-            </div>
-            
-            <div className="masonry">
-              {artworkData.map((artwork, index) => (
-                <div
-                  key={artwork.id}
-                  className="masonry-item animate-scale-in"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <img
-                    src={artwork.url ?? `/${artwork.filename}`}
-                    alt={artwork.title}
-                    className="cursor-zoom-in"
-                    onClick={() => openImage(artwork.url ?? `/${artwork.filename}`, artwork.title)}
-                  />
-                  <div className="masonry-item-content">
-                    <h3>{artwork.title}</h3>
-                    <p>{artwork.description}</p>
-                  </div>
+        <section id="artwork-section" className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
+          <div className="text-center mb-12">
+            <h3 className="text-3xl font-bold mb-4 flex items-center justify-center gap-3">
+              <i className="fas fa-palette text-primary"></i>
+              My Artwork
+            </h3>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Hope you enjoy my art, dear visitor! If you have any questions regarding my work, 
+              feel free to drop a dm on discord~ ^-^
+            </p>
+            <button
+              onClick={scrollToArtwork}
+              className="mt-6 modern-button-secondary"
+            >
+              <i className="fas fa-arrow-down mr-2"></i>
+              View Gallery
+            </button>
+          </div>
+          
+          <div className="masonry">
+            {artworkData.map((artwork, index) => (
+              <div
+                key={artwork.id}
+                className="masonry-item animate-scale-in"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <img
+                  src={artwork.url ?? `/${artwork.filename}`}
+                  alt={artwork.title}
+                  className="cursor-zoom-in"
+                  onClick={() => openImage(artwork.url ?? `/${artwork.filename}`, artwork.title)}
+                />
+                <div className="masonry-item-content">
+                  <h3>{artwork.title}</h3>
+                  <p>{artwork.description}</p>
                 </div>
-              ))}
-            </div>
-          </section>
-        )}
+              </div>
+            ))}
+          </div>
+        </section>
       </main>
 
       {/* Back to top button */}
-      {scrollArrows.up && (
+      {scrollProgress > 20 && (
         <button
-          className="fixed bottom-8 right-8 modern-button rounded-full w-12 h-12 flex items-center justify-center text-xl shadow-lg"
+          className="fixed bottom-8 right-8 modern-button rounded-full w-12 h-12 flex items-center justify-center text-xl shadow-lg animate-fade-in"
           onClick={scrollToTop}
         >
-          ↑
+          <i className="fas fa-arrow-up"></i>
         </button>
       )}
 
       {/* Footer */}
       <footer className="border-t border-border bg-muted/30 mt-20">
         <div className="max-w-7xl mx-auto px-6 py-8 text-center text-muted-foreground">
-          <p>© {new Date().getFullYear()} TskQ. All rights reserved.</p>
-          <p className="text-sm mt-2">System time: {currentTime}</p>
+          <p className="flex items-center justify-center gap-2">
+            <i className="fas fa-copyright"></i>
+            {new Date().getFullYear()} TskQ. All rights reserved.
+          </p>
+          <p className="text-sm mt-2 flex items-center justify-center gap-2">
+            <i className="fas fa-heart text-red-400"></i>
+            Made with love and lots of coffee
+          </p>
         </div>
       </footer>
 
