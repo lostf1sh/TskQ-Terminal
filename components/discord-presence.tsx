@@ -12,7 +12,7 @@ interface DiscordUser {
 interface DiscordActivity {
   type: number
   name: string
-  state?: string            // custom‐status text or activity “state”
+  state?: string
   details?: string
   timestamps?: {
     start?: number
@@ -101,7 +101,6 @@ export function DiscordPresence({ userId, onAdminUpload }: DiscordPresenceProps)
     }
   }
 
-  // helper for “Listening since”
   const formatElapsed = (start: number) => {
     const diff = Date.now() - start
     const mins = Math.floor(diff / 60_000)
@@ -110,17 +109,18 @@ export function DiscordPresence({ userId, onAdminUpload }: DiscordPresenceProps)
   }
 
   if (loading) return (
-    <div className="text-right">
-      <div className="terminal-green">$ fetching discord_status</div>
-      <div className="terminal-white">loading...</div>
+    <div className="modern-card animate-fade-in">
+      <div className="loading-skeleton h-4 w-32 mb-2"></div>
+      <div className="loading-skeleton h-3 w-24"></div>
     </div>
   )
+
   if (error) return (
-    <div className="text-right">
-      <div className="terminal-green">$ discord_status</div>
-      <div className="terminal-white">error: {error}</div>
+    <div className="modern-card">
+      <p className="text-destructive text-sm">Error: {error}</p>
     </div>
   )
+
   if (!presenceData) return null
 
   const {
@@ -131,107 +131,120 @@ export function DiscordPresence({ userId, onAdminUpload }: DiscordPresenceProps)
     spotify,
   } = presenceData
 
-  // pick out custom status (type 4), game (0) or competing (1)
   const customStatus = activities.find(a => a.type === 4 && a.state)
   const mainActivity = activities.find(a => a.type === 0 || a.type === 1)
 
-  // map presence to coloured dot
-  const statusColor = {
-    online: "bg-green-500",
-    idle:   "bg-yellow-500",
-    dnd:    "bg-red-500",
-    offline:"bg-gray-500",
+  const statusColorClass = {
+    online: "status-online",
+    idle: "status-idle",
+    dnd: "status-dnd",
+    offline: "status-offline",
   }[discord_status]
 
   return (
-    <div className="text-right">
+    <div className="modern-card animate-slide-in">
       <div
-        className="terminal-green cursor-pointer select-none"
+        className="cursor-pointer select-none"
         onClick={handleStatusClick}
       >
-        $ discord_status
-      </div>
-
-      <div className="flex items-center justify-end gap-2">
-        {discord_user.avatar && (
-          <img
-            src={`https://cdn.discordapp.com/avatars/${discord_user.id}/${discord_user.avatar}.png?size=32`}
-            alt={discord_user.username}
-            className="w-8 h-8 rounded-full"
-          />
-        )}
-        <div className="flex items-center gap-1">
-          <span className={`inline-block w-2 h-2 rounded-full ${statusColor}`} />
-          <span className="terminal-white">
-            {discord_user.username}
-          </span>
-        </div>
-      </div>
-
-      {/* Custom Status message */}
-      {customStatus && (
-        <div className="mt-1 flex items-center justify-end gap-1">
-          {customStatus.assets?.small_image && (
+        <div className="flex items-center gap-3 mb-3">
+          {discord_user.avatar && (
             <img
-              src={`https://cdn.discordapp.com/app-assets/${customStatus.id}/${customStatus.assets.small_image}.png`}
-              alt={customStatus.assets.small_text}
-              className="w-4 h-4"
+              src={`https://cdn.discordapp.com/avatars/${discord_user.id}/${discord_user.avatar}.png?size=32`}
+              alt={discord_user.username}
+              className="w-8 h-8 rounded-full"
             />
           )}
-          <span className="terminal-magenta text-xs">
-            {customStatus.state}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className={`status-indicator ${statusColorClass}`} />
+            <span className="font-medium">{discord_user.username}</span>
+          </div>
         </div>
-      )}
 
-      {/* Main Activity (game, stream, etc) */}
-      {mainActivity && (
-        <div className="mt-1">
-          <div className="terminal-orange">
-            {mainActivity.name}
-            {mainActivity.timestamps?.start && (
-              <> ({formatElapsed(mainActivity.timestamps.start)})</>
+        {/* Custom Status */}
+        {customStatus && (
+          <div className="flex items-center gap-2 mb-2">
+            {customStatus.assets?.small_image && (
+              <img
+                src={`https://cdn.discordapp.com/app-assets/${customStatus.id}/${customStatus.assets.small_image}.png`}
+                alt={customStatus.assets.small_text}
+                className="w-4 h-4"
+              />
+            )}
+            <span className="text-sm text-muted-foreground">{customStatus.state}</span>
+          </div>
+        )}
+
+        {/* Main Activity */}
+        {mainActivity && (
+          <div className="mb-2">
+            <div className="text-sm font-medium">
+              {mainActivity.name}
+              {mainActivity.timestamps?.start && (
+                <span className="text-muted-foreground ml-1">
+                  ({formatElapsed(mainActivity.timestamps.start)})
+                </span>
+              )}
+            </div>
+            {mainActivity.details && (
+              <div className="text-xs text-muted-foreground">{mainActivity.details}</div>
+            )}
+            {mainActivity.state && (
+              <div className="text-xs text-muted-foreground">{mainActivity.state}</div>
             )}
           </div>
-          {mainActivity.details  && <div className="terminal-white text-xs">{mainActivity.details}</div>}
-          {mainActivity.state    && <div className="terminal-white text-xs">{mainActivity.state}</div>}
-        </div>
-      )}
+        )}
 
-      {/* Spotify */}
-      {listening_to_spotify && spotify && (
-        <div className="mt-1">
-          <div className="terminal-orange">spotify: {spotify.song}</div>
-          <div className="terminal-white text-xs">by {spotify.artist}</div>
-        </div>
-      )}
+        {/* Spotify */}
+        {listening_to_spotify && spotify && (
+          <div className="border-t border-border pt-2">
+            <div className="text-sm font-medium text-success">♪ {spotify.song}</div>
+            <div className="text-xs text-muted-foreground">by {spotify.artist}</div>
+          </div>
+        )}
+      </div>
 
       {showLogin && (
-        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
-          <form
-            onSubmit={submitLogin}
-            className="bg-gray-900 p-4 rounded shadow-md flex flex-col gap-2"
-          >
-            <input
-              className="px-2 py-1 bg-black border border-gray-700 text-white"
-              placeholder="Username"
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-            />
-            <input
-              type="password"
-              className="px-2 py-1 bg-black border border-gray-700 text-white"
-              placeholder="Password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-            />
-            <button
-              type="submit"
-              className="bg-green-500 text-black px-3 py-1 rounded hover:bg-green-400"
-            >
-              Login
-            </button>
-          </form>
+        <div className="modal-overlay">
+          <div className="modal-content p-6 w-full max-w-sm">
+            <h3 className="text-lg font-semibold mb-4">Admin Login</h3>
+            <form onSubmit={submitLogin} className="space-y-4">
+              <div className="form-group">
+                <label className="form-label">Username</label>
+                <input
+                  className="modern-input"
+                  placeholder="Username"
+                  value={username}
+                  onChange={e => setUsername(e.target.value)}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Password</label>
+                <input
+                  type="password"
+                  className="modern-input"
+                  placeholder="Password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                />
+              </div>
+              <div className="flex gap-3 justify-end">
+                <button
+                  type="button"
+                  onClick={() => setShowLogin(false)}
+                  className="modern-button-secondary"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="modern-button"
+                >
+                  Login
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>

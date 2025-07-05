@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { DiscordPresence } from "@/components/discord-presence";
-import { Terminal } from "@/components/terminal";
 import { SocialLinks } from "@/components/social-links";
 import { cn } from "@/lib/utils";
 
@@ -120,7 +119,7 @@ function ZoomableModal({
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm flex items-center justify-center z-50"
+      className="modal-overlay"
       onClick={onClose}
       onMouseUp={endDrag}
     >
@@ -136,7 +135,7 @@ function ZoomableModal({
             e.stopPropagation();
             onClose();
           }}
-          className="absolute top-2 left-2 z-10 text-white bg-black bg-opacity-60 hover:bg-opacity-80 rounded p-1 font-bold"
+          className="absolute top-4 left-4 z-10 modern-button-secondary"
         >
           ✕
         </button>
@@ -151,7 +150,7 @@ function ZoomableModal({
           }}
         />
         <div
-          className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-60 text-green-400 font-mono text-sm px-3 py-1 rounded shadow-lg"
+          className="absolute bottom-4 left-1/2 transform -translate-x-1/2 modern-card text-sm px-4 py-2"
           onClick={(e) => e.stopPropagation()}
         >
           Scroll to zoom in/out
@@ -181,45 +180,57 @@ function UploadArtworkModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-gray-900 p-4 rounded shadow-md flex flex-col gap-2"
-      >
-        <input
-          className="px-2 py-1 bg-black border border-gray-700 text-white"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <input
-          className="px-2 py-1 bg-black border border-gray-700 text-white"
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setFile(e.target.files?.[0] || null)}
-          className="text-white"
-        />
-        <div className="flex gap-2 justify-end mt-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-3 py-1 border border-gray-700 text-white rounded"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="bg-green-500 text-black px-3 py-1 rounded hover:bg-green-400"
-          >
-            Upload
-          </button>
-        </div>
-      </form>
+    <div className="modal-overlay">
+      <div className="modal-content p-6 w-full max-w-md">
+        <h2 className="text-xl font-semibold mb-6">Upload Artwork</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="form-group">
+            <label className="form-label">Title</label>
+            <input
+              className="modern-input"
+              placeholder="Enter artwork title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Description</label>
+            <input
+              className="modern-input"
+              placeholder="Enter description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Image File</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setFile(e.target.files?.[0] || null)}
+              className="modern-input"
+              required
+            />
+          </div>
+          <div className="flex gap-3 justify-end mt-6">
+            <button
+              type="button"
+              onClick={onClose}
+              className="modern-button-secondary"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="modern-button"
+            >
+              Upload
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
@@ -233,10 +244,12 @@ export default function Home() {
   const [modal, setModal] = useState<{ src: string; alt: string } | null>(null);
   const [artworkData, setArtworkData] = useState<Artwork[]>(initialArtworkData);
   const [showUploadForm, setShowUploadForm] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   // Always show vertical scrollbar to prevent layout shift
   useEffect(() => {
     document.body.style.overflowY = "scroll";
+    setIsLoaded(true);
     return () => {
       document.body.style.overflowY = "";
     };
@@ -277,83 +290,104 @@ export default function Home() {
     setArtworkData((prev) => [...prev, art]);
   };
 
-  return (
-    <div className="min-h-screen flex flex-col bg-black text-white">
-      {/* Navbar / Presence */}
-      <div className="absolute top-6 left-6 z-50">
-        <span
-          className="font-mono text-green-400 text-5xl hover:text-green-200 transition-colors"
-          onMouseEnter={() => setHoverEmoji(true)}
-          onMouseLeave={() => setHoverEmoji(false)}
-        >
-          {hoverEmoji ? "(づ￣ 3￣)づ" : "(/≧▽≦)/"}
-        </span>
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="loading-skeleton w-32 h-8"></div>
       </div>
-      <DiscordPresence
-        userId="1002839537644482611"
-        onAdminUpload={() => setShowUploadForm(true)}
-      />
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background text-foreground animate-fade-in">
+      {/* Header */}
+      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-sm border-b border-border">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <span
+              className="text-3xl cursor-pointer transition-transform duration-200 hover:scale-110"
+              onMouseEnter={() => setHoverEmoji(true)}
+              onMouseLeave={() => setHoverEmoji(false)}
+            >
+              {hoverEmoji ? "(づ￣ 3￣)づ" : "(/≧▽≦)/"}
+            </span>
+            <div>
+              <h1 className="text-xl font-semibold">TskQ</h1>
+              <p className="text-sm text-muted-foreground">Digital Artist & Developer</p>
+            </div>
+          </div>
+          <DiscordPresence
+            userId="1002839537644482611"
+            onAdminUpload={() => setShowUploadForm(true)}
+          />
+        </div>
+      </header>
 
       {/* Main content */}
-      <main className="flex-1 px-6 py-8">
-        <section className="mb-12">
-          <p className="font-mono text-green-300 mb-2">
-            &gt; Interactive Terminal Interface
+      <main className="max-w-7xl mx-auto px-6 py-12 space-y-16">
+        {/* Welcome Section */}
+        <section className="text-center space-y-6 animate-slide-in">
+          <h2 className="text-4xl font-bold text-gradient">Welcome to my creative space</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            I'm a digital artist and developer passionate about creating immersive experiences.
+            My work spans across various mediums including digital art, web development, and interactive installations.
           </p>
-          <Terminal showArtwork={showArtwork} setShowArtwork={setShowArtwork} />
         </section>
 
-        <section className="mb-12">
-          <h2 className="font-mono text-green-400 text-lg mb-4">
-            $ ls ~/social
-          </h2>
+        {/* Social Links Section */}
+        <section className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
+          <h3 className="text-2xl font-semibold text-center mb-8">Connect with me</h3>
           <SocialLinks />
         </section>
 
-        <section className="flex flex-col items-center mb-12 space-y-4">
+        {/* Artwork Toggle */}
+        <section className="text-center animate-fade-in" style={{ animationDelay: '0.2s' }}>
           <button
             onClick={() => setShowArtwork((v) => !v)}
-            className="px-5 py-2 border border-green-400 text-green-400 hover:bg-green-400 hover:text-black rounded transition"
+            className="modern-button"
           >
             {showArtwork ? "Hide Artwork" : "Show Artwork"}
           </button>
-          {/* Scroll down arrow */}
-          <div
-            className={cn(
-              "mt-4 text-green-500 text-5xl transition-opacity duration-500 animate-bounce glow cursor-pointer select-none",
-              scrollArrows.down
-                ? "opacity-100 pointer-events-auto"
-                : "opacity-0 pointer-events-none",
-            )}
-            onClick={scrollToArtwork}
-          >
-            ↓
-          </div>
+          
+          {/* Scroll down indicator */}
+          {showArtwork && scrollArrows.down && (
+            <div
+              className="mt-8 text-primary text-4xl cursor-pointer select-none transition-all duration-300 hover:transform hover:scale-110 animate-bounce"
+              onClick={scrollToArtwork}
+            >
+              ↓
+            </div>
+          )}
         </section>
 
+        {/* Artwork Gallery */}
         {showArtwork && (
-          <section id="artwork-section" className="mb-12">
-            <h2 className="font-mono text-green-400 text-lg mb-4">
-              $ ls ~/artwork - Hope you enjoy my art, Dear visitor! - If you
-              have any questions regarding my work, feel free to drop a dm on
-              discord~! ^-^
-            </h2>
+          <section id="artwork-section" className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
+            <div className="text-center mb-12">
+              <h3 className="text-3xl font-bold mb-4">My Artwork</h3>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Hope you enjoy my art, dear visitor! If you have any questions regarding my work, 
+                feel free to drop a dm on discord~ ^-^
+              </p>
+            </div>
+            
             <div className="masonry">
-              {artworkData.map((a) => (
+              {artworkData.map((artwork, index) => (
                 <div
-                  key={a.id}
-                  className="masonry-item border border-gray-800 p-4 hover:border-green-500 transition-colors rounded bg-black"
+                  key={artwork.id}
+                  className="masonry-item animate-scale-in"
+                  style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <img
-                    src={a.url ?? `/${a.filename}`}
-                    alt={a.title}
-                    className="w-full h-auto object-cover rounded shadow-lg mb-2 cursor-zoom-in"
-                    onClick={() => openImage(a.url ?? `/${a.filename}`, a.title)}
+                    src={artwork.url ?? `/${artwork.filename}`}
+                    alt={artwork.title}
+                    className="cursor-zoom-in"
+                    onClick={() => openImage(artwork.url ?? `/${artwork.filename}`, artwork.title)}
                   />
-                  <h3 className="terminal-white font-bold">{a.title}</h3>
-                  <p className="terminal-white text-sm opacity-80">
-                    {a.description}
-                  </p>
+                  <div className="masonry-item-content">
+                    <h3>{artwork.title}</h3>
+                    <p>{artwork.description}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -361,26 +395,25 @@ export default function Home() {
         )}
       </main>
 
-      {/* Back to top arrow */}
-      <div
-        className={cn(
-          "fixed bottom-6 left-1/2 -translate-x-1/2 bg-black bg-opacity-50 rounded px-4 py-2 text-green-500 text-4xl transition-opacity duration-500 cursor-pointer glow",
-          scrollArrows.up
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none",
-        )}
-        onClick={scrollToTop}
-      >
-        ↑
-      </div>
+      {/* Back to top button */}
+      {scrollArrows.up && (
+        <button
+          className="fixed bottom-8 right-8 modern-button rounded-full w-12 h-12 flex items-center justify-center text-xl shadow-lg"
+          onClick={scrollToTop}
+        >
+          ↑
+        </button>
+      )}
 
       {/* Footer */}
-      <footer className="text-center py-4 font-mono text-gray-500">
-        © {new Date().getFullYear()} – TskQ
-        <div className="mt-1">system time: {currentTime}</div>
+      <footer className="border-t border-border bg-muted/30 mt-20">
+        <div className="max-w-7xl mx-auto px-6 py-8 text-center text-muted-foreground">
+          <p>© {new Date().getFullYear()} TskQ. All rights reserved.</p>
+          <p className="text-sm mt-2">System time: {currentTime}</p>
+        </div>
       </footer>
 
-      {/* Modal */}
+      {/* Modals */}
       {modal && (
         <ZoomableModal
           src={modal.src}

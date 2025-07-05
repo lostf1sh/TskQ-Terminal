@@ -4,7 +4,6 @@ import {
   Instagram,
   Youtube,
   Music2,
-  Twitter,
   Camera
 } from "lucide-react"
 
@@ -34,19 +33,19 @@ export function SocialLinks() {
 
   return (
     <div className="flex flex-wrap justify-center gap-4">
-      {socialLinks.map((link) => (
+      {socialLinks.map((link, index) => (
         <a
           key={link.name}
           href={link.url}
           target="_blank"
           rel="noopener noreferrer"
+          className="social-link animate-fade-in"
+          style={{ animationDelay: `${index * 0.1}s` }}
         >
-          <button className="flex items-center gap-2 bg-black border border-green-500 text-green-500 px-4 py-2 rounded hover:bg-green-500 hover:text-black transition-colors">
-            <span className="text-green-500 hover:text-black transition-colors">
-              {link.icon}
-            </span>
-            <span className="font-bold">{link.name}</span>
-          </button>
+          <span className="text-primary">
+            {link.icon}
+          </span>
+          <span>{link.name}</span>
         </a>
       ))}
     </div>
